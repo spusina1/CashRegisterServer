@@ -29,41 +29,5 @@ public class Branch {
     @OneToMany(mappedBy="branch")
     private Set<CashRegister> cashRegisters;
 
-    public Branch(@NotBlank String sifra, @NotBlank String company) {
-        this.sifra = sifra;
-        this.company = company;
-    }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSifra() {
-        return sifra;
-    }
-
-    public void setSifra(String sifra) {
-        this.sifra = sifra;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-
-    public Set<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<Product> products) {
-        this.products = products;
-    }
 }
