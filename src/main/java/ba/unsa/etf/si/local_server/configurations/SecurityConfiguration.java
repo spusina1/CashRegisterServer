@@ -4,7 +4,6 @@ import ba.unsa.etf.si.local_server.security.CustomUserDetailsService;
 import ba.unsa.etf.si.local_server.security.JwtAuthenticationEntryPoint;
 import ba.unsa.etf.si.local_server.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,8 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final String[] unprotectedRoutes = {
-            "/api/questions",
-            "/api/auth/**"
+            "/api/login",
     };
 
     @Bean
