@@ -2,13 +2,13 @@
 ## Team Alpha
 
 ### Team members
-* Rijad Fejzić
-* Samra Pušina
-* Amila Žigo
+* [Rijad Fejzić](https://github.com/rfejzic1)
+* [Samra Pušina](https://github.com/spusina1)
+* [Amila Žigo](https://github.com/azigo12)
 * Ajdin Karahasanović
-* Samra Mujčinović
+* [Samra Mujčinović](https://github.com/SamraMujcinovic)
 * Nudžejma Zukorlić
-* Deni Pencl 
+* Deni Pencl
 
 ### About
 
