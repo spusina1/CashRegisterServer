@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.awt.*;
+import javax.validation.constraints.Positive;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
@@ -17,20 +18,22 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotBlank
-    private String title;
 
-    //private Image image;
-    private Integer quantity;
     @NotBlank
-    private Float price;
-    private Float discount;
+    private String name;
+
+    @Positive
+    private Integer quantity;
+
+    @Positive
+    private BigDecimal price;
+
+    @Positive
+    private Integer discountPercentage;
+
+    private byte[] image;
 
     @ManyToOne
     @JoinColumn
     private Branch branch;
-
-
-
-
 }
