@@ -1,5 +1,6 @@
 package ba.unsa.etf.si.local_server.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,6 +27,7 @@ public class User {
     @NotBlank
     private String username;
 
+    @JsonIgnore
     @NotBlank
     private String password;
 
@@ -37,5 +39,23 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @NotBlank
+    private String name;
+
+    @NotBlank
+    private String surname;
+
+    @NotBlank
+    private String address;
+
+    @NotBlank
+    private String city;
+
+    @NotBlank
+    private String country;
+
+    @NotBlank
+    private String phoneNumber;
 
 }
