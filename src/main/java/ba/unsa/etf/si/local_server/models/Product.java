@@ -23,7 +23,7 @@ public class Product {
     private String name;
 
     @Positive
-    private Integer quantity;
+    private Double quantity;
 
     @Positive
     private BigDecimal price;
@@ -31,6 +31,10 @@ public class Product {
     @Positive
     private Integer discountPercentage;
 
+    @NotBlank
+    private String measurementUnit;
+
+    @NotBlank
     private String imageBase64;
 
     @ManyToOne
