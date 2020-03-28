@@ -51,14 +51,18 @@ public class MainSyncUpService {
         }};
 
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+        String json = response.getBody();
 
+        return jsonListToProductList(json);
+    }
+
+    private ArrayList<Product> jsonListToProductList(String json) {
         ArrayList<Product> products = new ArrayList<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response.getBody());
+            JsonNode root = mapper.readTree(json);
 
-            System.out.println();
             Iterator<JsonNode> elements = root.elements();
             while(elements.hasNext()) {
                 JsonNode element = elements.next();
@@ -74,8 +78,6 @@ public class MainSyncUpService {
                 Integer discount = productNode.get("discount").get("percentage").asInt();
 
                 Product product = new Product(id, name, quantity, price, discount, unit, image, null);
-
-                System.out.println(product.toString());
                 products.add(product);
             }
         } catch (JsonProcessingException err) {
@@ -83,10 +85,6 @@ public class MainSyncUpService {
         }
 
         return products;
-    }
-
-    private Product mapJsonToProduct(JsonNode jsonNode) {
-        return null;
     }
 
     public List<User> syncUsersFromMain() {
