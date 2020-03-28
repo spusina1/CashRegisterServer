@@ -31,7 +31,7 @@ public class Product {
     @Positive
     private Integer discountPercentage;
 
-    private byte[] image;
+    private String imageBase64;
 
     @ManyToOne
     @JoinColumn
