@@ -1,7 +1,10 @@
 package ba.unsa.etf.si.local_server.controllers;
 
+import ba.unsa.etf.si.local_server.models.User;
 import ba.unsa.etf.si.local_server.requests.LoginRequest;
 import ba.unsa.etf.si.local_server.responses.LoginResponse;
+import ba.unsa.etf.si.local_server.security.CurrentUser;
+import ba.unsa.etf.si.local_server.security.UserPrincipal;
 import ba.unsa.etf.si.local_server.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,12 @@ public class UserController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         String jwt = userService.authenticateUser(loginRequest);
         return ResponseEntity.ok(new LoginResponse(jwt));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(@CurrentUser UserPrincipal userPrincipal) {
+        User user = userService.getUserByUsername(userPrincipal.getUsername());
+        return ResponseEntity.ok(user);
     }
 
 }
