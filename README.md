@@ -5,7 +5,7 @@
 * [Rijad Fejzić](https://github.com/rfejzic1)
 * [Samra Pušina](https://github.com/spusina1)
 * [Amila Žigo](https://github.com/azigo12)
-* Ajdin Karahasanović
+* [Ajdin Karahasanović](https://github.com/akarahasan3)
 * [Samra Mujčinović](https://github.com/SamraMujcinovic)
 * Nudžejma Zukorlić
 * Deni Pencl
