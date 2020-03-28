@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: 'jdbc:postgresql://localhost:5432/si_local'
-    username: 'app'
-    password: ''
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
   jpa:
     properties:
       hibernate:
