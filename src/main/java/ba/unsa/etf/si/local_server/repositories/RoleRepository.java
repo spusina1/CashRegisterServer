@@ -1,4 +1,4 @@
-package ba.unsa.etf.si.local_server.respositories;
+package ba.unsa.etf.si.local_server.repositories;
 
 import ba.unsa.etf.si.local_server.models.Role;
 import ba.unsa.etf.si.local_server.models.RoleName;

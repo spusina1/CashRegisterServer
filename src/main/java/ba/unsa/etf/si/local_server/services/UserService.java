@@ -2,7 +2,7 @@ package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.User;
-import ba.unsa.etf.si.local_server.respositories.UserRepository;
+import ba.unsa.etf.si.local_server.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import ba.unsa.etf.si.local_server.requests.LoginRequest;
 import ba.unsa.etf.si.local_server.security.JwtTokenProvider;

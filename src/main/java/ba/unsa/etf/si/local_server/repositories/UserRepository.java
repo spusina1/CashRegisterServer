@@ -1,4 +1,4 @@
-package ba.unsa.etf.si.local_server.respositories;
+package ba.unsa.etf.si.local_server.repositories;
 
 import ba.unsa.etf.si.local_server.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
