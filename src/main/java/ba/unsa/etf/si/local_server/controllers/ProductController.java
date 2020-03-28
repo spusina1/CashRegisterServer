@@ -29,9 +29,4 @@ public class ProductController {
         return productService.getProduct(id);
     }
 
-    @GetMapping("/api/main")
-    public String getUserFromMain() {
-        return productService.getFromMain();
-    }
-
 }

@@ -5,9 +5,7 @@ import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.requests.FilterRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +15,6 @@ import java.util.stream.Stream;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     public List<Product> getProducts(FilterRequest filterRequest) {
         List<Product> products = productRepository.findAll();
@@ -31,10 +27,6 @@ public class ProductService {
         return productRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such product!"));
-    }
-
-    public String getFromMain() {
-        return restTemplate.getForObject("https://main-server-si.herokuapp.com/api/logs", String.class);
     }
 
 }
