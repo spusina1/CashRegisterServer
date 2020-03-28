@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FilterRequest {
+    private String orderBy;
+    private Boolean descending;
     private Boolean discount;
     private Integer minPrice;
     private Integer maxPrice;
-    private String title;
+    private String name;
 }

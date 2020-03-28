@@ -17,10 +17,17 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/api/products")
-    public List<Product> getProducts(@RequestParam(required = false) Boolean discount) {
-        FilterRequest filterRequest = new FilterRequest();
-        filterRequest.setDiscount(discount);
-
+    public List<Product> getProducts(
+            @RequestParam(required = false) Boolean discount,
+            @RequestParam(required = false) String orderBy,
+            @RequestParam(required = false) Boolean descending,
+            @RequestParam(required = false) Integer lowestPrice,
+            @RequestParam(required = false) Integer highestPrice,
+            @RequestParam(required = false) String search
+    ) {
+        FilterRequest filterRequest = new FilterRequest(
+                orderBy, descending, discount, lowestPrice, highestPrice, search
+        );
         return productService.getProducts(filterRequest);
     }
 
