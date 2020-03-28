@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -17,10 +15,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public List<Product> getProducts(FilterRequest filterRequest) {
-        List<Product> products = productRepository.findAll();
-        Stream<Product> productStream = products.stream();
-
-        return productStream.collect(Collectors.toList());
+        return productRepository.findByFilter(filterRequest);
     }
 
     public Product getProduct(Long id) {

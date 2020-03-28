@@ -29,7 +29,7 @@ public class Product {
     private BigDecimal price;
 
     @Positive
-    private Integer discountPercentage;
+    private Integer discount;
 
     @NotBlank
     private String measurementUnit;
