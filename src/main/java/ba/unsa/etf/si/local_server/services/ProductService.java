@@ -24,9 +24,6 @@ public class ProductService {
         List<Product> products = productRepository.findAll();
         Stream<Product> productStream = products.stream();
 
-        if(filterRequest.getDiscount()) {
-        }
-
         return productStream.collect(Collectors.toList());
     }
 
