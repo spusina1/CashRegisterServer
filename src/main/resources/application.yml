@@ -10,5 +10,5 @@ spring:
     hibernate:
       ddl-auto: update
 app:
-  jwtSecret: "secret_key"
+  jwtSecret: ${JWT_SECRET}
   jwtExpirationInMs: 604800000
