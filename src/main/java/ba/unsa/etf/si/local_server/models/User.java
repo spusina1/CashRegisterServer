@@ -1,6 +1,7 @@
 package ba.unsa.etf.si.local_server.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
