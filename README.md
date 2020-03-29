@@ -7,7 +7,7 @@
 * [Amila Žigo](https://github.com/azigo12)
 * [Ajdin Karahasanović](https://github.com/akarahasan3)
 * [Samra Mujčinović](https://github.com/SamraMujcinovic)
-* Nudžejma Zukorlić
+* [Nudžejma Zukorlić](https://github.com/nudzejmaz)
 * Deni Pencl
 
 ### About
