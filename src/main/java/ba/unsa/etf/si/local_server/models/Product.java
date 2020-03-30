@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 @Entity
@@ -22,19 +21,16 @@ public class Product {
     @NotBlank
     private String name;
 
-    @Positive
     private Double quantity;
 
-    @Positive
     private BigDecimal price;
 
-    @Positive
     private Integer discount;
 
     @NotBlank
     private String measurementUnit;
 
-    @NotBlank
+    @Column(columnDefinition = "TEXT")
     private String imageBase64;
 
     @ManyToOne
