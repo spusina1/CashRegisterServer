@@ -50,7 +50,7 @@ public class MainSyncUpService {
         List<Product> products = fetchProductsFromMain();
 
         userService.batchInsertUsers(users);
-        productService.batchInsertProducts(new ArrayList<>());
+        productService.batchInsertProducts(products);
     }
 
     private List<Product> fetchProductsFromMain() {
