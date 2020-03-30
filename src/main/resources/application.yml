@@ -6,9 +6,20 @@ spring:
   jpa:
     properties:
       hibernate:
+        generate_statistics: true
+        jdbc:
+          batch_size: 4
+        order_inserts: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
 app:
   jwtSecret: ${JWT_SECRET}
   jwtExpirationInMs: 604800000
+main_server:
+  base_URI: ${MAIN_SERVER_BASE_URI}
+  login_username: ${MAIN_LOGIN_USERNAME}
+  login_password: ${MAIN_LOGIN_PASSWORD}
+  office_id: ${OFFICE_ID}
+cron:
+  main_fetch: ${MAIN_SYNC_CRON_TIME}

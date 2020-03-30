@@ -1,4 +1,4 @@
-package ba.unsa.etf.si.local_server.respositories;
+package ba.unsa.etf.si.local_server.repositories;
 
 import ba.unsa.etf.si.local_server.models.Role;
 import ba.unsa.etf.si.local_server.models.RoleName;
@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    Optional<Role> findByName(RoleName roleName);
+    Optional<Role> findByRolename(RoleName roleName);
 }

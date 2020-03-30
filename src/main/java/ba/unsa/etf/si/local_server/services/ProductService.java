@@ -24,4 +24,10 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("No such product!"));
     }
 
+    public void batchInsertProducts(List<Product> products) {
+        productRepository.deleteAllInBatch();
+        productRepository.flush();
+        productRepository.saveAll(products);
+        productRepository.flush();
+    }
 }
