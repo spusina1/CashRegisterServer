@@ -9,6 +9,7 @@ Korisnik Cash Register i Seller App treba moći pristupit svim neophodnim podaci
 * Kreirati CashRegister model
 * Kreirati Role model
 * Kreirati RoleName model
+* Implementirati metodu za dobavljanje podataka od Main servera
 * Uraditi push koda
 * Napraviti pull request
 
@@ -33,6 +34,7 @@ Korisnik Cash Register i Seller App treba imati pregled informacija o svim proiz
 * Implementirati ProductController
 * Implementirati ProductService
 * Implementirati ProductRepository
+* Implementirati metode za vraćanje informacija o svim proizvodima iz baze
 * Uraditi push koda
 * Napraviti pull request
 
