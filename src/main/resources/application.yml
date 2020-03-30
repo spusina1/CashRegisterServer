@@ -12,3 +12,8 @@ spring:
 app:
   jwtSecret: ${JWT_SECRET}
   jwtExpirationInMs: 604800000
+  mainServerBaseURI: "https://main-server-si.herokuapp.com/app"
+  mainUsername: "office1"
+  mainPassword: "password"
+cron:
+  mainFetch: "0 * * * * *"
