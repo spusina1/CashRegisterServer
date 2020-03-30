@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,11 +23,6 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
     private final MainSyncUpService mainSyncUpService;
-
-    @GetMapping("/test")
-    public String result() {
-        return "The Greatest Secret Ever!";
-    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -40,6 +36,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @Secured("ROLE_OFFICEMAN")
     @PostMapping("/sync")
     public ResponseEntity<?> syncDatabases() {
         mainSyncUpService.syncDatabases();
