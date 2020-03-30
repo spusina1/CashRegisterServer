@@ -21,33 +21,39 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Service
 public class MainSyncUpService {
     private final RestTemplate restTemplate;
+    private final UserService userService;
+    private final ProductService productService;
 
-    @Value("${app.mainServerBaseURI}")
+    @Value("${main_server.base_URI}")
     private String baseURI;
 
-    @Value("${app.mainUsername}")
+    @Value("${main_server.login_username}")
     private String username;
 
-    @Value("${app.mainPassword}")
+    @Value("${main_server.login_password}")
     private String password;
 
+    @Value("${main_server.office_id}")
+    private int officeID;
 
-    @Scheduled(cron = "${cron.mainFetch}")
+    @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
+        List<User> users = fetchUsersFromMain();
+        List<Product> products = fetchProductsFromMain();
+
+        userService.batchInsertUsers(users);
+        productService.batchInsertProducts(new ArrayList<>());
     }
 
     private List<Product> fetchProductsFromMain() {
-        int officeID = 1;
         String uri = String.format("%s/offices/%d/products", baseURI, officeID);
         String json = makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToProduct);
@@ -77,6 +83,7 @@ public class MainSyncUpService {
             String uri = baseURI + "/auth/login";
             return restTemplate.postForObject(uri, request, MainLoginResponse.class).getToken();
         } catch (HttpClientErrorException err) {
+            err.printStackTrace();
             throw new ResourceNotFoundException("Could not get login response from the main server");
         }
     }
@@ -127,12 +134,15 @@ public class MainSyncUpService {
             String country = profile.get("country").asText();
             String phoneNumber = profile.get("phoneNumber").asText();
 
+            user.setPassword(jsonNode.get("password").asText());
             user.setName(name);
             user.setSurname(surname);
             user.setAddress(address);
             user.setCity(city);
             user.setCountry(country);
             user.setPhoneNumber(phoneNumber);
+
+            System.out.println(user.toString());
 
             return user;
         } catch (JsonProcessingException e) {
