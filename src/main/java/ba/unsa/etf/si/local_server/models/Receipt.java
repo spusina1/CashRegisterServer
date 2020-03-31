@@ -23,6 +23,15 @@ public class Receipt {
     @NotBlank
     private String receiptId;
 
+    @NotBlank
+    private   Long cashRegisterId;
+
+    @NotBlank
+    private Long officeId;
+
+    @NotBlank
+    private  Long businessId;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "receipt_receiptItem",
             joinColumns = @JoinColumn(name = "receipt_id"),
