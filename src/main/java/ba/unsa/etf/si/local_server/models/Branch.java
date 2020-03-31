@@ -18,8 +18,7 @@ public class Branch {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotBlank
-    private String sifra;
+
     @NotBlank
     private String company;
 
