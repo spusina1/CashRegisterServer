@@ -43,6 +43,9 @@ public class MainSyncUpService {
     @Value("${main_server.office_id}")
     private int officeID;
 
+    @Value("${main_server.business_id}")
+    private int businessID;
+
     @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
