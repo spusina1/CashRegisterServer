@@ -33,7 +33,4 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String imageBase64;
 
-    @ManyToOne
-    @JoinColumn
-    private Branch branch;
 }
