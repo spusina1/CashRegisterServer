@@ -23,10 +23,11 @@ public class Receipt {
     @NotBlank
     private String receiptId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "receipt_receiptItem",
             joinColumns = @JoinColumn(name = "receipt_id"),
             inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
+
     private Set<ReceiptItem> receiptItems = new HashSet<>();
 
     @NotBlank
@@ -35,4 +36,6 @@ public class Receipt {
     @NotBlank
     private  BigDecimal totalPrice;
 
+    @NotBlank
+    private Long timestamp;
 }
