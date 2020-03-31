@@ -122,7 +122,7 @@ public class MainSyncUpService {
         String unit = productNode.get("unit").asText();
         Integer discount = productNode.get("discount").get("percentage").asInt();
 
-        return new Product(id, name, quantity, price, discount, unit, image, null);
+        return new Product(id, name, quantity, price, discount, unit, image);
     }
 
     private User mapJsonToUser(JsonNode jsonNode) {
