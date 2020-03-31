@@ -21,5 +21,6 @@ main_server:
   login_username: ${MAIN_LOGIN_USERNAME}
   login_password: ${MAIN_LOGIN_PASSWORD}
   office_id: ${OFFICE_ID}
+  business_id: ${BUSINESS_ID}
 cron:
   main_fetch: ${MAIN_SYNC_CRON_TIME}
