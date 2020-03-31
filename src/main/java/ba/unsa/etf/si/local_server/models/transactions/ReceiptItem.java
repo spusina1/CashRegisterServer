@@ -1,4 +1,4 @@
-package ba.unsa.etf.si.local_server.models;
+package ba.unsa.etf.si.local_server.models.transactions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package ba.unsa.etf.si.local_server.models;
+package ba.unsa.etf.si.local_server.models.transactions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +24,9 @@ public class Receipt {
     private String receiptId;
 
     @NotBlank
+    private  ReceiptStatus receiptStatus;
+
+    @NotBlank
     private   Long cashRegisterId;
 
     @NotBlank
@@ -33,7 +36,7 @@ public class Receipt {
     private  Long businessId;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "receipt_receiptItem",
+    @JoinTable(name = "receipt_item",
             joinColumns = @JoinColumn(name = "receipt_id"),
             inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
 
