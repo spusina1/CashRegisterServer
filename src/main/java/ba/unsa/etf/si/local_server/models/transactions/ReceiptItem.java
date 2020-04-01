@@ -17,7 +17,11 @@ public class ReceiptItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
     private Double quantity;
+
+    @ManyToOne
+    @JoinColumn(name="receipt_id", nullable=false)
+    private Receipt receipt;
+
 }
 
