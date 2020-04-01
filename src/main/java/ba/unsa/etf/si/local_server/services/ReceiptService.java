@@ -22,7 +22,7 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PEND
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
 
-    public String checkRequest(ReceiptRequest receiptRequest) {
+    public String checkRequest(ReceiptRequest receiptRequest, ReceiptStatus receiptStatus) {
 
         if(receiptRequest.getId()==null){
             Instant instant = Instant.now();
@@ -48,19 +48,31 @@ public class ReceiptService {
         }
         else{
 
-        boolean present = receiptRepository.findById(receiptRequest.getId()).isPresent(); //znaci da nije obrisan racun
-        if(present) {
-            ReceiptStatus receiptStatus = receiptRepository.getOne(receiptRequest.getId()).getReceiptStatus();
-            System.out.println(receiptStatus);
-            if (receiptStatus == PAYED) return "Already processed request!";
-            if(receiptStatus == PENDING){
-                updateReceipt(receiptRequest.getId());
-                return "Receipt is successfully saved!";
+            boolean present = receiptRepository.findById(receiptRequest.getId()).isPresent(); //znaci da nije obrisan racun
+            if(present) {
+                System.out.println(receiptStatus);
+                /*if (receiptStatus == PAYED) return "Already processed request!";
+                if(receiptStatus == PENDING){
+                    updateReceipt(receiptRequest.getId());
+                    return "Receipt is successfully saved!";
+                }*/
+                switch (receiptStatus){
+                    case PAYED:
+                        return "Already processed request!";
+                    case PENDING:
+                        updateReceipt(receiptRequest.getId());
+                        return "Receipt is successfully saved!";
+                    case AWAITING_PAYMENT:
+                        Receipt receipt = receiptRepository.getOne(receiptRequest.getId());
+                        receiptRepository.save(receipt);
+                        return "Receipt awaiting payment!";
+                }
             }
-             }
         }
-          return  "";
+        return  "";
     }
+
+
 
     public void updateReceipt(Long id) {
         Receipt receipt = receiptRepository.getOne(id);

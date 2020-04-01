@@ -1,5 +1,7 @@
 package ba.unsa.etf.si.local_server.controllers;
 
+import ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus;
+import ba.unsa.etf.si.local_server.repositories.ReceiptRepository;
 import ba.unsa.etf.si.local_server.requests.LoginRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.responses.LoginResponse;
@@ -17,10 +19,12 @@ import javax.validation.Valid;
 @RestController
 public class ReceiptController {
     private final ReceiptService receiptService;
+    private final ReceiptRepository receiptRepository;
 
     @PostMapping("/api/receipts")
     public ResponseEntity<?> saveReceipt(@Valid @RequestBody ReceiptRequest receiptRequest) {
-        String responseMessage = receiptService.checkRequest(receiptRequest);
+        ReceiptStatus receiptStatus = receiptRepository.getOne(receiptRequest.getId()).getReceiptStatus();
+        String responseMessage = receiptService.checkRequest(receiptRequest, receiptStatus);
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
 }
