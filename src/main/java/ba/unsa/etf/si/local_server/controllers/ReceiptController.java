@@ -21,9 +21,9 @@ public class ReceiptController {
         return receiptService.deleteReceipt(id);
     }
 
-    @GetMapping("/api/receipts")
-    public List<Receipt> getReceipts() {
-        return receiptService.getReceipts();
-    }
+    //@GetMapping("/api/receipts")
+    //public List<Receipt> getReceipts() {
+    //    return receiptService.getReceipts();
+    //}
 
 }
