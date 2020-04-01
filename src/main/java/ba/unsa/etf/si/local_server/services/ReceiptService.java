@@ -15,7 +15,7 @@ import java.util.List;
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
 
-    public List<Receipt> getReceipts() {
-        return receiptRepository.findReceiptsByReceiptStatus(ReceiptStatus.PENDING);
+    public List<Receipt> getSellerReceipts() {
+        return receiptRepository.findReceiptByReceiptStatus(ReceiptStatus.PENDING);
     }
 }

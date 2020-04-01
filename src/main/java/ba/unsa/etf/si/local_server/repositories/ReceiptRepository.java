@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 
 public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
-    List<Receipt> findReceiptsByReceiptStatus(ReceiptStatus receiptStatus);
-
+    List<Receipt> findReceiptByReceiptStatus(ReceiptStatus receiptStatus);
 }

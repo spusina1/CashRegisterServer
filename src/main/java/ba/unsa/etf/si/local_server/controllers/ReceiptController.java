@@ -5,6 +5,7 @@ import ba.unsa.etf.si.local_server.models.transactions.Views;
 import ba.unsa.etf.si.local_server.services.ReceiptService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,10 +22,7 @@ public class ReceiptController {
 
     @GetMapping("/api/sellerAppReceipts")
     @JsonView(Views.Public.class)
-    public Map<String, List<Receipt>> getSAReceipts() {
-        List<Receipt> result = receiptService.getReceipts();
-        Map<String, List<Receipt>> map = new TreeMap<>();
-        map.put("receipts", result);
-        return map;
+    public ResponseEntity<?> getSellerAppReceipts() {
+        return ResponseEntity.ok(receiptService.getSellerReceipts());
     }
 }
