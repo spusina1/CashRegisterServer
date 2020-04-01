@@ -13,6 +13,6 @@ public class ReceiptRequest {
     private Long id;
     private  String username;
     private  Long cashRegisterId;
-    private Set<ReceiptItem> receiptItems;
+    private Set<ReceiptItemRequest> receiptItems;
 
 }

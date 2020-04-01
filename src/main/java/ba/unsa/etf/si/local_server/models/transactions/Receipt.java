@@ -37,8 +37,9 @@ public class Receipt {
 //    @JoinTable(name = "receipt_item",
 //            joinColumns = @JoinColumn(name = "receipt_id"),
 //            inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="receipt")
-    private Set<ReceiptItem> receiptItems = new HashSet<>();
+    @OneToMany(cascade =  CascadeType.ALL)
+    @JoinColumn(name = "receipt_id")
+    private Set<ReceiptItem> receiptItems;
 
 
     private String username;

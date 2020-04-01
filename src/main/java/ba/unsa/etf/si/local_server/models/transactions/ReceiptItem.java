@@ -14,13 +14,12 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class ReceiptItem {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Double quantity;
+    private Long productId;
 
-    @ManyToOne
-    @JoinColumn(name="receipt_id", nullable=false)
-    private Receipt receipt;
+    private Double quantity;
 
 }
 
