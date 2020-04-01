@@ -17,7 +17,9 @@ public class ReceiptItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
+    private Long productId;
+
     private Double quantity;
+
 }
 
