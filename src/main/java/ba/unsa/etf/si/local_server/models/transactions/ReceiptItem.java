@@ -19,5 +19,9 @@ public class ReceiptItem {
 
     @NotBlank
     private Double quantity;
+
+    @ManyToOne
+    @JoinColumn(name="receiptId", nullable=false)
+    private Receipt receipt;
 }
 
