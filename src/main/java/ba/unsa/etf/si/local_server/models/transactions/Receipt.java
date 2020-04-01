@@ -1,5 +1,7 @@
 package ba.unsa.etf.si.local_server.models.transactions;
 
+
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,27 +20,27 @@ import java.util.Set;
 public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.Public.class)
     private Long id;
 
     private String receiptId;
 
-    @NotBlank
     private  ReceiptStatus receiptStatus;
 
 
     private   Long cashRegisterId;
 
-    @NotBlank
     private Long officeId;
 
-    @NotBlank
     private  Long businessId;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "receipt_item",
-            joinColumns = @JoinColumn(name = "receipt_id"),
-            inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
-
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinTable(name = "receipt_item",
+//            joinColumns = @JoinColumn(name = "receipt_id"),
+//            inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
+    @OneToMany(cascade =  CascadeType.ALL)
+    @JoinColumn(name = "receipt_id")
+    @JsonView(Views.Public.class)
     private Set<ReceiptItem> receiptItems = new HashSet<>();
 
 
@@ -49,4 +51,5 @@ public class Receipt {
 
 
     private Long timestamp;
+
 }
