@@ -1,4 +1,4 @@
-package ba.unsa.etf.si.local_server.models;
+package ba.unsa.etf.si.local_server.models.transactions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,19 +8,16 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "cash_registers")
+@Table(name = "receiptItems")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class CashRegister {
+public class ReceiptItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn
-    private Branch branch;
-
-
+    @NotBlank
+    private Double quantity;
 }
+

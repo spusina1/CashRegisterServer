@@ -43,6 +43,9 @@ public class MainSyncUpService {
     @Value("${main_server.office_id}")
     private int officeID;
 
+    @Value("${main_server.business_id}")
+    private int businessID;
+
     @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
@@ -119,7 +122,7 @@ public class MainSyncUpService {
         String unit = productNode.get("unit").asText();
         Integer discount = productNode.get("discount").get("percentage").asInt();
 
-        return new Product(id, name, quantity, price, discount, unit, image, null);
+        return new Product(id, name, quantity, price, discount, unit, image);
     }
 
     private User mapJsonToUser(JsonNode jsonNode) {
