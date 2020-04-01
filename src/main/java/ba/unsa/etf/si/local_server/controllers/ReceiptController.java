@@ -21,7 +21,6 @@ public class ReceiptController {
     private final ReceiptService receiptService;
 
     @GetMapping("/api/sellerAppReceipts")
-    @JsonView(Views.Public.class)
     public ResponseEntity<?> getSellerAppReceipts() {
         return ResponseEntity.ok(receiptService.getSellerReceipts());
     }
