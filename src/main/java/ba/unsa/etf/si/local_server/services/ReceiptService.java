@@ -16,9 +16,10 @@ import java.util.Optional;
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
 
-    public List<Receipt> getReceipts() {
-        return receiptRepository.findAll();
-    }
+
+    //public List<Receipt> getReceipts() {
+    //    return receiptRepository.findAll();
+    //}
 
     public ResponseEntity<Object> deleteReceipt(Long id){
         Optional<Receipt> receipt = receiptRepository.findById(id);

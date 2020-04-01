@@ -3,6 +3,7 @@ package ba.unsa.etf.si.local_server.models.transactions;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -22,25 +23,29 @@ public class Receipt {
 
     private String receiptId;
 
-    private ReceiptStatus receiptStatus;
 
-    private Long cashRegisterId;
+    private  ReceiptStatus receiptStatus;
+
+
+    private   Long cashRegisterId;
 
     private Long officeId;
 
-    private Long businessId;
+    private  Long businessId;
+    //
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinTable(name = "receipt_item",
+//            joinColumns = @JoinColumn(name = "receipt_id"),
+//            inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
+    @OneToMany(cascade =  CascadeType.ALL)
+    @JoinColumn(name = "receipt_id")
+    private Set<ReceiptItem> receiptItems;
 
-   // @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-   // @JoinTable(name = "receipt_item",
-   //         joinColumns = @JoinColumn(name = "receipt_id"),
-    //        inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy="receipt")
-    private Set<ReceiptItem> receiptItems = new HashSet<>();
 
     private String username;
 
     private  BigDecimal totalPrice;
+
 
     private Long timestamp;
 }
