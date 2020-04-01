@@ -14,7 +14,6 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class ReceiptItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private Double quantity;

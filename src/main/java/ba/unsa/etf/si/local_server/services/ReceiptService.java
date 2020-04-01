@@ -20,7 +20,7 @@ public class ReceiptService {
     public String checkRequest(ReceiptRequest receiptRequest) {
         Boolean log = receiptRepository.findById(receiptRequest.getId()).isPresent();
         System.out.println(log);
-        if(log) return "Already processed request!"; //provjerit is paid
+        if(log) return "Already processed request!";
         else{
             Receipt newReceipt = new Receipt();
             newReceipt.setReceiptId("123");
