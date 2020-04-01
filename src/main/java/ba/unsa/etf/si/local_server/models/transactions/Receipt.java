@@ -20,13 +20,12 @@ public class Receipt {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
     private String receiptId;
 
     @NotBlank
     private  ReceiptStatus receiptStatus;
 
-    @NotBlank
+
     private   Long cashRegisterId;
 
     @NotBlank
@@ -42,12 +41,12 @@ public class Receipt {
 
     private Set<ReceiptItem> receiptItems = new HashSet<>();
 
-    @NotBlank
+
     private String username;
 
     @NotBlank
     private  BigDecimal totalPrice;
 
-    @NotBlank
+
     private Long timestamp;
 }
