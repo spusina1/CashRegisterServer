@@ -19,8 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PAYED;
-import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PENDING;
+import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.*;
 
 @AllArgsConstructor
 @Service
@@ -66,7 +65,10 @@ public class ReceiptService {
     }
 
     public String removeReceipt(Long id){
-        receipt = makeNegative(receipt);
+        if(getReceipt(id) == null) return "No receipt with id " + id;
+        Receipt receipt = makeNegative(getReceipt(id));
+        receiptRepository.save(receipt);
+        return "Receipt successfully deleted!";
 
     }
 
@@ -75,6 +77,7 @@ public class ReceiptService {
         for(ReceiptItem receiptItem : receipt.getReceiptItems()){
             receiptItem.setQuantity(receiptItem.getQuantity() * -1);
         }
+        receipt.setReceiptStatus(DELETED);
         return receipt;
     }
 
