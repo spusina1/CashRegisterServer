@@ -1,5 +1,7 @@
 package ba.unsa.etf.si.local_server.services;
 
+import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
+import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.Receipt;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus;
@@ -63,7 +65,7 @@ public class ReceiptService {
         return  "";
     }
 
-    public String removeReceipt(@NotNull Receipt receipt){
+    public String removeReceipt(Long id){
         receipt = makeNegative(receipt);
 
     }
@@ -80,6 +82,12 @@ public class ReceiptService {
         Receipt receipt = receiptRepository.getOne(id);
         receipt.setReceiptStatus(PAYED);
         receiptRepository.save(receipt);
+    }
+
+    public Receipt getReceipt(Long id) {
+        return receiptRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No such receipt!"));
     }
 
     public  BigDecimal getTotalPrice(Set<ReceiptItem> items){
