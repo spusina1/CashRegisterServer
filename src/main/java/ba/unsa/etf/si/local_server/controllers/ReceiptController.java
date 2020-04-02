@@ -32,7 +32,10 @@ public class ReceiptController {
     public Receipt getReceipt(@PathVariable Long id) {
         return receiptService.getReceipt(id);
     }
-    //@PostMapping("/api/receipts/{id}")
-    //public ResponseEntity<?> deleteReceipt()
+    @PostMapping("/api/receipts/{id}")
+    public ResponseEntity<?> deleteReceipt(@PathVariable Long id){
+        String responseMessage = receiptService.removeReceipt(id);
+        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+    }
 
 }
