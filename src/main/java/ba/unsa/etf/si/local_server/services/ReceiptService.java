@@ -20,7 +20,7 @@ public class ReceiptService {
     private final ReceiptRepository receiptRepository;
 
     public Set<SellerAppReceiptsResponse> getSellerReceipts() {
-        Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(ReceiptStatus.PENDING);
+        Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(ReceiptStatus.UNPROCESSED);
 
         Set<SellerAppReceiptsResponse> sellerAppReceiptsResponses = receipts
                 .stream()
