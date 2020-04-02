@@ -23,8 +23,11 @@ public class ReceiptController {
 
     @PostMapping("/api/receipts")
     public ResponseEntity<?> saveReceipt(@Valid @RequestBody ReceiptRequest receiptRequest) {
-        ReceiptStatus receiptStatus = receiptRepository.getOne(receiptRequest.getId()).getReceiptStatus();
-        String responseMessage = receiptService.checkRequest(receiptRequest, receiptStatus);
+        //ReceiptStatus receiptStatus = receiptRepository.getOne(receiptRequest.getId()).getReceiptStatus();
+        String responseMessage = receiptService.checkRequest(receiptRequest);
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
+    //@PostMapping("/api/receipts/{id}")
+    //public ResponseEntity<?> deleteReceipt()
+
 }

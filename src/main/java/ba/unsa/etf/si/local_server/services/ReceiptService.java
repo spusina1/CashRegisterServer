@@ -8,8 +8,11 @@ import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,8 +25,7 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PEND
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
 
-    public String checkRequest(ReceiptRequest receiptRequest, ReceiptStatus receiptStatus) {
-
+    public String checkRequest(ReceiptRequest receiptRequest) {
         if(receiptRequest.getId()==null){
             Instant instant = Instant.now();
             long timeStampMillis = instant.toEpochMilli();
@@ -47,32 +49,32 @@ public class ReceiptService {
             return  "Receipt is successfully saved!";
         }
         else{
-
             boolean present = receiptRepository.findById(receiptRequest.getId()).isPresent(); //znaci da nije obrisan racun
             if(present) {
+                ReceiptStatus receiptStatus = receiptRepository.getOne(receiptRequest.getId()).getReceiptStatus();
                 System.out.println(receiptStatus);
-                /*if (receiptStatus == PAYED) return "Already processed request!";
+                if (receiptStatus == PAYED) return "Already processed request!";
                 if(receiptStatus == PENDING){
                     updateReceipt(receiptRequest.getId());
                     return "Receipt is successfully saved!";
-                }*/
-                switch (receiptStatus){
-                    case PAYED:
-                        return "Already processed request!";
-                    case PENDING:
-                        updateReceipt(receiptRequest.getId());
-                        return "Receipt is successfully saved!";
-                    case AWAITING_PAYMENT:
-                        Receipt receipt = receiptRepository.getOne(receiptRequest.getId());
-                        receiptRepository.save(receipt);
-                        return "Receipt awaiting payment!";
                 }
             }
         }
         return  "";
     }
 
+    public String removeReceipt(@NotNull Receipt receipt){
+        receipt = makeNegative(receipt);
 
+    }
+
+    private Receipt makeNegative(Receipt receipt){
+        receipt.setId(receipt.getId() * -1);
+        for(ReceiptItem receiptItem : receipt.getReceiptItems()){
+            receiptItem.setQuantity(receiptItem.getQuantity() * -1);
+        }
+        return receipt;
+    }
 
     public void updateReceipt(Long id) {
         Receipt receipt = receiptRepository.getOne(id);
