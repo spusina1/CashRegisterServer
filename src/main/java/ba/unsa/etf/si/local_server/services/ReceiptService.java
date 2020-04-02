@@ -5,6 +5,7 @@ import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.Receipt;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus;
+import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.ReceiptRepository;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.*;
 @Service
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
+    private final ProductRepository productRepository;
 
     public String checkRequest(ReceiptRequest receiptRequest) {
         if(receiptRequest.getId()==null){
@@ -65,16 +67,20 @@ public class ReceiptService {
     }
 
     public String removeReceipt(Long id){
-        if(getReceipt(id) == null) return "No receipt with id " + id;
         Receipt receipt = makeNegative(getReceipt(id));
         receiptRepository.save(receipt);
         return "Receipt successfully deleted!";
-
     }
 
     private Receipt makeNegative(Receipt receipt){
         receipt.setId(receipt.getId() * -1);
         for(ReceiptItem receiptItem : receipt.getReceiptItems()){
+            Product product = productRepository.findById(
+                    receiptItem.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("No such item!")
+            );
+            product.setQuantity(product.getQuantity() + receiptItem.getQuantity());
+            productRepository.save(product);
             receiptItem.setQuantity(receiptItem.getQuantity() * -1);
         }
         receipt.setReceiptStatus(DELETED);
