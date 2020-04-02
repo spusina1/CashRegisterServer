@@ -1,10 +1,14 @@
 package ba.unsa.etf.si.local_server.services;
 
+import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
+import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.Receipt;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus;
+import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.ReceiptRepository;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
+import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,7 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PEND
 @Service
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
+    private final ProductRepository productRepository;
 
     public String checkRequest(ReceiptRequest receiptRequest) {
 
@@ -62,6 +67,34 @@ public class ReceiptService {
           return  "";
     }
 
+    public String saveOrder(SellerAppRequest receiptItems) {
+        if(receiptItems.getItems() != null){
+            Instant instant = Instant.now();
+            long timeStampMillis = instant.toEpochMilli();
+            Receipt newReceipt = new Receipt();
+
+            newReceipt.setReceiptStatus(ReceiptStatus.UNPROCESSED);
+            newReceipt.setBusinessId(1L);
+            newReceipt.setOfficeId(1L);
+            //newReceipt.setCashRegisterId(1L);
+            //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            //newReceipt.setUsername(auth.getPrincipal().toString());
+
+            newReceipt.setTimestamp(timeStampMillis);
+
+            Set<ReceiptItem> items = receiptItems
+                    .getItems()
+                    .stream()
+                    .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
+                    .collect(Collectors.toSet());
+            newReceipt.setReceiptItems(items);
+            newReceipt.setTotalPrice(getTotalPrice(items));
+            receiptRepository.save(newReceipt);
+            return  "Order is successfully saved!";
+        }
+        return "";
+    }
+
     public void updateReceipt(Long id) {
         Receipt receipt = receiptRepository.getOne(id);
         receipt.setReceiptStatus(PAYED);
@@ -69,9 +102,16 @@ public class ReceiptService {
     }
 
     public  BigDecimal getTotalPrice(Set<ReceiptItem> items){
-        return BigDecimal.valueOf(items
-                .stream()
-                .mapToDouble(ReceiptItem::getQuantity)
-                .sum());
+        BigDecimal sum = BigDecimal.valueOf(0);
+        for(ReceiptItem item: items){
+            Product product = productRepository
+                    .findById(item.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("No such product!"));
+            sum = sum.add(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+        }
+        return sum;
     }
+
+
+
 }

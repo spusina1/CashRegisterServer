@@ -4,5 +4,6 @@ public enum ReceiptStatus {
     CANCELED,
     PAYED,
     INSUFFICIENT_FUNDS,
-    PENDING
+    PENDING,
+    UNPROCESSED
 }
