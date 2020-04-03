@@ -33,10 +33,13 @@ public class MainReceiptService {
             String response = httpClientService.makePostRequest("/receipts", json);
 
             JsonNode jsonNode = objectMapper.readTree(response);
-            int statusCode = jsonNode.get("status").asInt(200);
+            JsonNode statusCodeProperty = jsonNode.get("status");
 
-            if (statusCode >= 400) {
-                throw new AppException("Response with status code " + statusCode + " while posting receipt to main");
+            if(statusCodeProperty != null) {
+                int statusCode = statusCodeProperty.asInt(200);
+                if (statusCode >= 400) {
+                    throw new AppException("Response with status code " + statusCode + " while posting receipt to main");
+                }
             }
 
         } catch (JsonProcessingException e) {

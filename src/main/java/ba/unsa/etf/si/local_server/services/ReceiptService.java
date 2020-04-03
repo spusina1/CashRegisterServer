@@ -2,15 +2,11 @@ package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
-import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.*;
-import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.ReceiptRepository;
-import ba.unsa.etf.si.local_server.requests.MainLoginRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
@@ -54,7 +50,7 @@ public class ReceiptService {
             throw new BadRequestException("Illegal payment method");
         }
 
-        ReceiptStatus receiptStatus = paymentMethod == PaymentMethod.PAY_APP ? PENDING : PAYED;
+        ReceiptStatus receiptStatus = paymentMethod == PaymentMethod.PAY_APP ? PENDING : PAID;
 
         Receipt receipt = new Receipt(
                 null,
@@ -76,13 +72,8 @@ public class ReceiptService {
 
         System.out.println(receipt);
 
-        try {
-            receiptRepository.save(receipt);
-            mainReceiptService.postReceiptToMain(receipt);
-        } catch (ConstraintViolationException err) {
-            String message = String.format("Receipt with ID %s already exists", receiptRequest.getReceiptId());
-            throw new BadRequestException(message);
-        }
+        receiptRepository.save(receipt);
+        mainReceiptService.postReceiptToMain(receipt);
 
         return "Successfully created receipt";
     }
