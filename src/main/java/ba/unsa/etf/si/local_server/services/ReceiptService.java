@@ -70,10 +70,13 @@ public class ReceiptService {
             productService.updateProductQuantity(receiptItem.getProductId(), -1 * receiptItem.getQuantity())
         );
 
-        System.out.println(receipt);
 
         receiptRepository.save(receipt);
         mainReceiptService.postReceiptToMain(receipt);
+
+        if(receipt.getReceiptStatus() == PENDING) {
+            mainReceiptService.pollReceiptStatus(receipt.getReceiptId());
+        }
 
         return "Successfully created receipt";
     }
