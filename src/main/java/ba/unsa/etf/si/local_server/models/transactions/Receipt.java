@@ -1,6 +1,7 @@
 package ba.unsa.etf.si.local_server.models.transactions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class Receipt {
 
     private String receiptId;
 
+    @JsonProperty("status")
     private ReceiptStatus receiptStatus;
 
     private PaymentMethod paymentMethod;

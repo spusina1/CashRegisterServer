@@ -6,6 +6,7 @@ import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.*;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.ReceiptRepository;
+import ba.unsa.etf.si.local_server.requests.MainLoginRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.*;
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
     private final ProductService productService;
+    private final MainReceiptService mainReceiptService;
 
     @Value("${main_server.office_id}")
     private long officeId;
@@ -76,6 +78,7 @@ public class ReceiptService {
 
         try {
             receiptRepository.save(receipt);
+            mainReceiptService.postReceiptToMain(receipt);
         } catch (ConstraintViolationException err) {
             String message = String.format("Receipt with ID %s already exists", receiptRequest.getReceiptId());
             throw new BadRequestException(message);
@@ -101,6 +104,7 @@ public class ReceiptService {
 
         try {
             receiptRepository.save(reversedReceipt);
+            mainReceiptService.postReceiptToMain(reversedReceipt);
         } catch (ConstraintViolationException err) {
             return "Cannot reverse already reversed receipt";
         }
@@ -132,9 +136,9 @@ public class ReceiptService {
         );
     }
 
-    public void updateReceipt(String id) {
+    public void updateReceiptStatus(String id, ReceiptStatus receiptStatus) {
         Receipt receipt = getReceipt(id);
-        receipt.setReceiptStatus(PAYED);
+        receipt.setReceiptStatus(receiptStatus);
         receiptRepository.save(receipt);
     }
 
@@ -153,5 +157,9 @@ public class ReceiptService {
                                 .getPrice()
                                 .multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public List<Receipt> getReceipts(Long cashRegisterId) {
+        return receiptRepository.findByCashRegisterId(cashRegisterId);
     }
 }

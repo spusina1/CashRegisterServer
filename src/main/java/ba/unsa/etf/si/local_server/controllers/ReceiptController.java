@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -23,9 +24,16 @@ public class ReceiptController {
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
 
+    @GetMapping("/api/receipts")
+    public ResponseEntity<?> getReceipts(@RequestParam(name = "cash_register_id", required = false) Long cashRegisterId) {
+        List<Receipt> receipts = receiptService.getReceipts(cashRegisterId);
+        return ResponseEntity.ok(receipts);
+    }
+
     @GetMapping("/api/receipts/{id}")
-    public Receipt getReceipt(@PathVariable String id) {
-        return receiptService.getReceipt(id);
+    public ResponseEntity<?> getReceipt(@PathVariable String id) {
+        Receipt receipt = receiptService.getReceipt(id);
+        return ResponseEntity.ok(receipt);
     }
 
     @DeleteMapping("/api/receipts/{id}")

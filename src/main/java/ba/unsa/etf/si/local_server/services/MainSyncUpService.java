@@ -27,24 +27,12 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Service
 public class MainSyncUpService {
-    private final RestTemplate restTemplate;
+    private final HttpClientService httpClientService;
     private final UserService userService;
     private final ProductService productService;
 
-    @Value("${main_server.base_URI}")
-    private String baseURI;
-
-    @Value("${main_server.login_username}")
-    private String username;
-
-    @Value("${main_server.login_password}")
-    private String password;
-
     @Value("${main_server.office_id}")
     private int officeID;
-
-    @Value("${main_server.business_id}")
-    private int businessID;
 
     @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
@@ -57,38 +45,15 @@ public class MainSyncUpService {
     }
 
     private List<Product> fetchProductsFromMain() {
-        String uri = String.format("%s/offices/%d/products", baseURI, officeID);
-        String json = makeGetRequest(uri);
+        String uri = String.format("/offices/%d/products", officeID);
+        String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToProduct);
     }
 
     private List<User> fetchUsersFromMain() {
-        String uri = String.format("%s/office-employees", baseURI);
-        String json = makeGetRequest(uri);
+        String uri = "/office-employees";
+        String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToUser);
-    }
-
-    private String makeGetRequest(String uri) {
-        MainLoginRequest mainLoginRequest = new MainLoginRequest(username, password);
-        String token = obtainOfficeManagerToken(mainLoginRequest);
-
-        HttpHeaders headers = new HttpHeaders() {{
-            String bearerToken = String.format("Bearer %s", token);
-            set(AUTHORIZATION, bearerToken);
-        }};
-
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-        return response.getBody();
-    }
-
-    private String obtainOfficeManagerToken(MainLoginRequest request) {
-        try {
-            String uri = baseURI + "/auth/login";
-            return restTemplate.postForObject(uri, request, MainLoginResponse.class).getToken();
-        } catch (HttpClientErrorException err) {
-            err.printStackTrace();
-            throw new ResourceNotFoundException("Could not get login response from the main server");
-        }
     }
 
     private <T> ArrayList<T> jsonListToObjectList(String json, Function<JsonNode, T> mapJsonNodeToObject) {

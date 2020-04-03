@@ -1,6 +1,7 @@
 package ba.unsa.etf.si.local_server.models.transactions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class ReceiptItem {
     @JsonIgnore
     private Long id;
 
+    @JsonProperty("id")
     private Long productId;
 
     private Double quantity;
