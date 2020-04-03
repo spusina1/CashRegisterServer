@@ -1,108 +1,157 @@
 package ba.unsa.etf.si.local_server.services;
 
+import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.Product;
-import ba.unsa.etf.si.local_server.models.transactions.Receipt;
-import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
-import ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus;
+import ba.unsa.etf.si.local_server.models.transactions.*;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.ReceiptRepository;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
+
+    @Value("${main_server.office_id}")
+    private long officeId;
+
+    @Value("${main_server.business_id}")
+    private long businessId;
 
     public String checkRequest(ReceiptRequest receiptRequest) {
-        if(receiptRequest.getId()==null){
-            Instant instant = Instant.now();
-            long timeStampMillis = instant.toEpochMilli();
-            Receipt newReceipt = new Receipt();
-            newReceipt.setReceiptId(receiptRequest.getCashRegisterId()+ "11" + timeStampMillis);
-            newReceipt.setReceiptStatus(PAYED);
-            newReceipt.setBusinessId(1L);
-            newReceipt.setOfficeId(1L);
-            newReceipt.setCashRegisterId(receiptRequest.getCashRegisterId());
-            newReceipt.setUsername(receiptRequest.getUsername());
-            newReceipt.setTimestamp(timeStampMillis);
-
-            Set<ReceiptItem> items = receiptRequest
+        Set<ReceiptItem> items = receiptRequest
                     .getReceiptItems()
                     .stream()
-                    .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
+                    .map(receiptItemRequest -> new ReceiptItem(
+                            null,
+                            receiptItemRequest.getId(),
+                            receiptItemRequest.getQuantity()))
                     .collect(Collectors.toSet());
-            newReceipt.setReceiptItems(items);
-            newReceipt.setTotalPrice(getTotalPrice(items));
-            receiptRepository.save(newReceipt);
-            return  "Receipt is successfully saved!";
+
+        String[] receiptIdData = receiptRequest.getReceiptId().split("-");
+        Long now = Long.parseLong(receiptIdData[3]);
+
+        PaymentMethod paymentMethod;
+
+        try {
+            paymentMethod = Enum.valueOf(PaymentMethod.class, receiptRequest.getPaymentMethod());
+        } catch (NullPointerException | IllegalArgumentException err) {
+            throw new BadRequestException("Illegal payment method");
         }
-        else{
-            boolean present = receiptRepository.findById(receiptRequest.getId()).isPresent(); //znaci da nije obrisan racun
-            if(present) {
-                ReceiptStatus receiptStatus = receiptRepository.getOne(receiptRequest.getId()).getReceiptStatus();
-                System.out.println(receiptStatus);
-                if (receiptStatus == PAYED) return "Already processed request!";
-                if(receiptStatus == PENDING){
-                    updateReceipt(receiptRequest.getId());
-                    return "Receipt is successfully saved!";
-                }
-            }
+
+        ReceiptStatus receiptStatus = paymentMethod == PaymentMethod.PAY_APP ? PENDING : PAYED;
+
+        Receipt receipt = new Receipt(
+                null,
+                receiptRequest.getReceiptId(),
+                receiptStatus,
+                paymentMethod,
+                receiptRequest.getCashRegisterId(),
+                officeId,
+                businessId,
+                items,
+                receiptRequest.getUsername(),
+                getTotalPrice(items),
+                now
+        );
+
+        items.forEach(receiptItem ->
+            productService.updateProductQuantity(receiptItem.getProductId(), -1 * receiptItem.getQuantity())
+        );
+
+        System.out.println(receipt);
+
+        try {
+            receiptRepository.save(receipt);
+        } catch (ConstraintViolationException err) {
+            String message = String.format("Receipt with ID %s already exists", receiptRequest.getReceiptId());
+            throw new BadRequestException(message);
         }
-        return  "";
+
+        return "Successfully created receipt";
     }
 
-    public String removeReceipt(Long id){
-        Receipt receipt = makeNegative(getReceipt(id));
-        receiptRepository.save(receipt);
-        return "Receipt successfully deleted!";
-    }
+    public String reverseReceipt(String id) {
+        Receipt receipt = getReceipt(id);
 
-    private Receipt makeNegative(Receipt receipt){
-        receipt.setId(receipt.getId() * -1);
-        for(ReceiptItem receiptItem : receipt.getReceiptItems()){
-            Product product = productRepository.findById(
-                    receiptItem.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("No such item!")
-            );
-            product.setQuantity(product.getQuantity() + receiptItem.getQuantity());
-            productRepository.save(product);
-            receiptItem.setQuantity(receiptItem.getQuantity() * -1);
+        if (receipt.getReceiptStatus() == DELETED) {
+            return "Cannot reverse receipt reversion";
         }
-        receipt.setReceiptStatus(DELETED);
-        return receipt;
+
+        Receipt reversedReceipt = getReversedReceipt(receipt);
+
+        reversedReceipt
+                .getReceiptItems()
+                .forEach(receiptItem ->
+                        productService.updateProductQuantity(receiptItem.getProductId(), -1 * receiptItem.getQuantity())
+                );
+
+        try {
+            receiptRepository.save(reversedReceipt);
+        } catch (ConstraintViolationException err) {
+            return "Cannot reverse already reversed receipt";
+        }
+
+        return "Receipt successfully reversed!";
     }
 
-    public void updateReceipt(Long id) {
-        Receipt receipt = receiptRepository.getOne(id);
+    private Receipt getReversedReceipt(Receipt receipt) {
+        BigDecimal reversedTotalPrice = receipt.getTotalPrice().multiply(BigDecimal.valueOf(-1));
+
+        Set<ReceiptItem> items = receipt
+                .getReceiptItems()
+                .stream()
+                .map(item -> new ReceiptItem(null, item.getProductId(), item.getQuantity() * -1))
+                .collect(Collectors.toSet());
+
+        return new Receipt(
+                null,
+                "-" + receipt.getReceiptId(),
+                DELETED,
+                receipt.getPaymentMethod(),
+                receipt.getCashRegisterId(),
+                receipt.getOfficeId(),
+                receipt.getBusinessId(),
+                items,
+                receipt.getUsername(),
+                reversedTotalPrice,
+                new Date().getTime()
+        );
+    }
+
+    public void updateReceipt(String id) {
+        Receipt receipt = getReceipt(id);
         receipt.setReceiptStatus(PAYED);
         receiptRepository.save(receipt);
     }
 
-    public Receipt getReceipt(Long id) {
+    public Receipt getReceipt(String id) {
         return receiptRepository
-                .findById(id)
+                .findByReceiptId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such receipt!"));
     }
 
-    public  BigDecimal getTotalPrice(Set<ReceiptItem> items){
-        return BigDecimal.valueOf(items
+    private BigDecimal getTotalPrice(Set<ReceiptItem> items){
+        return items
                 .stream()
-                .mapToDouble(ReceiptItem::getQuantity)
-                .sum());
+                .map(item ->
+                        productService
+                                .getProduct(item.getProductId())
+                                .getPrice()
+                                .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
