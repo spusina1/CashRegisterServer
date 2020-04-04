@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PAYED;
-import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PENDING;
+import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.*;
 
 @AllArgsConstructor
 @Service
@@ -47,7 +46,7 @@ public class ReceiptService {
     }
 
     public Set<SellerAppReceiptsResponse> getSellerReceipts() {
-        Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(ReceiptStatus.UNPROCESSED);
+        Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(UNPROCESSED);
 
         Set<SellerAppReceiptsResponse> sellerAppReceiptsResponses = receipts
                 .stream()
@@ -92,7 +91,7 @@ public class ReceiptService {
             ReceiptStatus receiptStatus = receiptRepository.getOne(receiptRequest.getId()).getReceiptStatus();
             System.out.println(receiptStatus);
             if (receiptStatus == PAYED) return "Already processed request!";
-            if(receiptStatus == PENDING){
+            if(receiptStatus == UNPROCESSED){
                 updateReceipt(receiptRequest.getId());
                 return "Receipt is successfully saved!";
             }
@@ -102,18 +101,18 @@ public class ReceiptService {
     }
 
     public String saveOrder(SellerAppRequest receiptItems) {
-        if(receiptItems.getItems() != null){
+        if(receiptItems.getReceiptItems() != null){
             Instant instant = Instant.now();
             long timeStampMillis = instant.toEpochMilli();
             Receipt newReceipt = new Receipt();
 
-            newReceipt.setReceiptStatus(ReceiptStatus.UNPROCESSED);
+            newReceipt.setReceiptStatus(UNPROCESSED);
             newReceipt.setBusinessId(1L);
             newReceipt.setOfficeId(1L);
             newReceipt.setTimestamp(timeStampMillis);
 
             Set<ReceiptItem> items = receiptItems
-                    .getItems()
+                    .getReceiptItems()
                     .stream()
                     .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
                     .collect(Collectors.toSet());
@@ -137,7 +136,14 @@ public class ReceiptService {
             Product product = productRepository
                     .findById(item.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("No such product!"));
-            sum = sum.add(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+            BigDecimal newPrice = product.getPrice();
+            BigDecimal discount = newPrice.multiply(BigDecimal.valueOf(product.getDiscount()/100.));
+            System.out.println("Ovdje1:");
+            System.out.println(discount);
+            newPrice=newPrice.subtract(discount);
+            System.out.println("Ovdje:");
+            System.out.println(newPrice);
+            sum = sum.add(newPrice.multiply(BigDecimal.valueOf(item.getQuantity())));
         }
         return sum;
     }
