@@ -4,8 +4,6 @@ import ba.unsa.etf.si.local_server.models.transactions.Receipt;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import ba.unsa.etf.si.local_server.responses.ReceiptResponse;
-import ba.unsa.etf.si.local_server.security.CurrentUser;
-import ba.unsa.etf.si.local_server.security.UserPrincipal;
 import ba.unsa.etf.si.local_server.services.ReceiptService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +37,9 @@ public class ReceiptController {
     @PostMapping("/api/orders")
     public ResponseEntity<?> saveOrder(@Valid @RequestBody SellerAppRequest receiptItems){
         String responseMessage = receiptService.saveOrder(receiptItems);
+        return ResponseEntity.ok(responseMessage);
     }
-  
+
     @PostMapping("/api/receipts")
     public ResponseEntity<?> saveReceipt(@Valid @RequestBody ReceiptRequest receiptRequest) {
         String responseMessage = receiptService.checkRequest(receiptRequest);

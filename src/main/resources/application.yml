@@ -6,7 +6,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        generate_statistics: true
+        generate_statistics: false
         jdbc:
           batch_size: 4
         order_inserts: true
