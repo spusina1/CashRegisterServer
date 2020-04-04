@@ -2,6 +2,7 @@ package ba.unsa.etf.si.local_server.controllers;
 
 import ba.unsa.etf.si.local_server.requests.LoginRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
+import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import ba.unsa.etf.si.local_server.responses.LoginResponse;
 import ba.unsa.etf.si.local_server.responses.ReceiptResponse;
 import ba.unsa.etf.si.local_server.services.ReceiptService;
@@ -21,6 +22,12 @@ public class ReceiptController {
     @PostMapping("/api/receipts")
     public ResponseEntity<?> saveReceipt(@Valid @RequestBody ReceiptRequest receiptRequest) {
         String responseMessage = receiptService.checkRequest(receiptRequest);
+        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+    }
+
+    @PostMapping("/api/order")
+    public ResponseEntity<?> saveOrder(@Valid @RequestBody SellerAppRequest receiptItems){
+        String responseMessage = receiptService.saveOrder(receiptItems);
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
 }
