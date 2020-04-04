@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DeleteReceiptResponse {
     private String message;
+    private final Integer statusCode = 200;
 }
