@@ -2,6 +2,7 @@ package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.responses.SellerAppReceiptItemsResponse;
 import ba.unsa.etf.si.local_server.responses.SellerAppReceiptsResponse;
+import ba.unsa.etf.si.local_server.responses.DeleteReceiptResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
@@ -15,6 +16,8 @@ import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,6 +34,17 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PEND
 @Service
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
+
+    public ResponseEntity<Object> deleteReceipt(Long id){
+        Optional<Receipt> receipt = receiptRepository.findById(id);
+
+        if(receipt.isPresent()) {
+            receiptRepository.deleteById(id);
+            return new ResponseEntity<>(new DeleteReceiptResponse("Receipt is successfully deleted!"), HttpStatus.CREATED);
+        }
+
+        return new ResponseEntity<>(new DeleteReceiptResponse("Already processed request!"), HttpStatus.BAD_REQUEST);
+    }
 
     public Set<SellerAppReceiptsResponse> getSellerReceipts() {
         Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(ReceiptStatus.UNPROCESSED);
@@ -96,10 +110,6 @@ public class ReceiptService {
             newReceipt.setReceiptStatus(ReceiptStatus.UNPROCESSED);
             newReceipt.setBusinessId(1L);
             newReceipt.setOfficeId(1L);
-            //newReceipt.setCashRegisterId(1L);
-            //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            //newReceipt.setUsername(auth.getPrincipal().toString());
-
             newReceipt.setTimestamp(timeStampMillis);
 
             Set<ReceiptItem> items = receiptItems

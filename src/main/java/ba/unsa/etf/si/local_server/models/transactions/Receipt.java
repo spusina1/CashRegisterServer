@@ -35,7 +35,7 @@ public class Receipt {
     @OneToMany(cascade =  CascadeType.ALL)
     @JoinColumn(name = "receipt_id")
     private Set<ReceiptItem> receiptItems = new HashSet<>();
-
+  
     private String username;
 
     private  BigDecimal totalPrice;

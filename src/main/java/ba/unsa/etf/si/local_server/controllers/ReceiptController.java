@@ -10,7 +10,6 @@ import ba.unsa.etf.si.local_server.responses.ReceiptResponse;
 import ba.unsa.etf.si.local_server.services.ReceiptService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,8 +17,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.validation.Valid;
 
@@ -27,6 +28,12 @@ import javax.validation.Valid;
 @RestController
 public class ReceiptController {
     private final ReceiptService receiptService;
+
+    // TODO: Change all routes that work with seller app to start with /api/orders
+    @DeleteMapping(value = "/api/receipts/{id}")
+    public ResponseEntity<Object> deleteReceipt(@PathVariable("id") Long id) {
+        return receiptService.deleteReceipt(id);
+    }
 
     @GetMapping("/api/sellerAppReceipts")
     public ResponseEntity<?> getSellerAppReceipts() {
@@ -44,4 +51,5 @@ public class ReceiptController {
         String responseMessage = receiptService.saveOrder(receiptItems);
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
+
 }

@@ -18,5 +18,5 @@ public class ReceiptItem {
     private Long id;
     private Long productId;
     private Double quantity;
-}
 
+}
