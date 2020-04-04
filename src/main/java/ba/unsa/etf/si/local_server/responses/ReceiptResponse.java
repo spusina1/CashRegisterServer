@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ReceiptResponse {
-    private final Integer statusCode = 200;
     private String message;
+    private final Integer statusCode = 200;
 }

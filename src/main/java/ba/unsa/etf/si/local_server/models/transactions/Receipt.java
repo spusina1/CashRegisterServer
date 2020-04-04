@@ -19,7 +19,7 @@ import java.util.Set;
 public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.Public.class)
+
     private Long id;
 
     private String receiptId;

@@ -92,7 +92,7 @@ public class ReceiptService {
             System.out.println(receiptStatus);
             if (receiptStatus == PAYED) return "Already processed request!";
             if(receiptStatus == UNPROCESSED){
-                updateReceipt(receiptRequest.getId());
+                updateReceipt(receiptRequest.getId(), receiptRequest);
                 return "Receipt is successfully saved!";
             }
              }
@@ -124,9 +124,14 @@ public class ReceiptService {
         return "";
     }
 
-    public void updateReceipt(Long id) {
+    public void updateReceipt(Long id, ReceiptRequest receiptRequest) {
+        Instant instant = Instant.now();
+        long timeStampMillis = instant.toEpochMilli();
         Receipt receipt = receiptRepository.getOne(id);
         receipt.setReceiptStatus(PAYED);
+        receipt.setCashRegisterId(receiptRequest.getCashRegisterId());
+        receipt.setUsername(receiptRequest.getUsername());
+        receipt.setTimestamp(timeStampMillis);
         receiptRepository.save(receipt);
     }
 
