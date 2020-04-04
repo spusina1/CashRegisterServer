@@ -19,28 +19,22 @@ import java.util.Set;
 public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.Public.class)
     private Long id;
 
     private String receiptId;
 
-
     private  ReceiptStatus receiptStatus;
-
 
     private   Long cashRegisterId;
 
     private Long officeId;
 
     private  Long businessId;
-//
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinTable(name = "receipt_item",
-//            joinColumns = @JoinColumn(name = "receipt_id"),
-//            inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
+
     @OneToMany(cascade =  CascadeType.ALL)
     @JoinColumn(name = "receipt_id")
-    private Set<ReceiptItem> receiptItems;
-
+    private Set<ReceiptItem> receiptItems = new HashSet<>();
 
     private String username;
 
@@ -48,4 +42,5 @@ public class Receipt {
 
 
     private Long timestamp;
+
 }

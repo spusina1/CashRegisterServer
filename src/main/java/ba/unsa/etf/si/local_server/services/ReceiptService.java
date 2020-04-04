@@ -1,5 +1,9 @@
 package ba.unsa.etf.si.local_server.services;
 
+import ba.unsa.etf.si.local_server.responses.SellerAppReceiptItemsResponse;
+import ba.unsa.etf.si.local_server.responses.SellerAppReceiptsResponse;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.Receipt;
@@ -9,6 +13,7 @@ import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.ReceiptRepository;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
+
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PAYED;
@@ -25,6 +31,20 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PEND
 @Service
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
+
+    public Set<SellerAppReceiptsResponse> getSellerReceipts() {
+        Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(ReceiptStatus.UNPROCESSED);
+
+        Set<SellerAppReceiptsResponse> sellerAppReceiptsResponses = receipts
+                .stream()
+                .map(r -> new SellerAppReceiptsResponse(r.getId(), r.getReceiptItems()
+                        .stream()
+                        .map(receiptItem -> new SellerAppReceiptItemsResponse(receiptItem.getProductId(), receiptItem.getQuantity()))
+                        .collect(Collectors.toSet())))
+                .collect(Collectors.toSet());
+        return  sellerAppReceiptsResponses;
+    }
+
     private final ProductRepository productRepository;
 
     public String checkRequest(ReceiptRequest receiptRequest) {
@@ -111,7 +131,5 @@ public class ReceiptService {
         }
         return sum;
     }
-
-
 
 }
