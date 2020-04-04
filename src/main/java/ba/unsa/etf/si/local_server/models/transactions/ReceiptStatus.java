@@ -6,4 +6,5 @@ public enum ReceiptStatus {
     INSUFFICIENT_FUNDS,
     PENDING,
     DELETED
+    UNPROCESSED
 }

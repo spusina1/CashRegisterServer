@@ -19,11 +19,10 @@ public class ReceiptItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
     private Long id;
-
+  
     @JsonProperty("id")
     private Long productId;
-
+  
     private Double quantity;
 
 }
-

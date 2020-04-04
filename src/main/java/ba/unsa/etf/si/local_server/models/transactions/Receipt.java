@@ -23,6 +23,7 @@ import java.util.Set;
 public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+
     private Long id;
 
     private String receiptId;
@@ -47,4 +48,5 @@ public class Receipt {
     private BigDecimal totalPrice;
 
     private Long timestamp;
+
 }
