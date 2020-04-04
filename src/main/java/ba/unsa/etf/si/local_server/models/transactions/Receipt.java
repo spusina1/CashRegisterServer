@@ -1,10 +1,9 @@
 package ba.unsa.etf.si.local_server.models.transactions;
 
-
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -27,26 +26,18 @@ public class Receipt {
 
     private  ReceiptStatus receiptStatus;
 
-
     private   Long cashRegisterId;
 
     private Long officeId;
 
     private  Long businessId;
 
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinTable(name = "receipt_item",
-//            joinColumns = @JoinColumn(name = "receipt_id"),
-//            inverseJoinColumns = @JoinColumn(name = "receiptItem_id"))
     @OneToMany(cascade =  CascadeType.ALL)
     @JoinColumn(name = "receipt_id")
-    @JsonView(Views.Public.class)
     private Set<ReceiptItem> receiptItems = new HashSet<>();
-
 
     private String username;
 
-    @NotBlank
     private  BigDecimal totalPrice;
 
 
