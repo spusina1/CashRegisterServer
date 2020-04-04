@@ -6,6 +6,7 @@ import ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,12 @@ public class MainReceiptService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Value("${main_server.poll_timeout}")
+    private int pollTimeout;
+
+    @Value("${main_server.poll_attempts}")
+    private int pollAttempts;
+
     public MainReceiptService(@Lazy ReceiptService receiptService, HttpClientService httpClientService) {
         this.receiptService = receiptService;
         this.httpClientService = httpClientService;
@@ -27,19 +34,30 @@ public class MainReceiptService {
     public void pollReceiptStatus(String receiptId) {
         String uri = String.format("/receipts/%s", receiptId);
         ReceiptStatus receiptStatus = ReceiptStatus.PENDING;
+        int iteration = 0;
 
         try {
-            while(receiptStatus == ReceiptStatus.PENDING) {
+            while(iteration < pollAttempts && receiptStatus == ReceiptStatus.PENDING) {
                 String response = httpClientService.makeGetRequest(uri);
                 JsonNode jsonNode = objectMapper.readTree(response);
                 checkResponseStatus(jsonNode);
 
                 String statusString = jsonNode.get("status").asText();
                 receiptStatus = ReceiptStatus.valueOf(statusString);
-                System.out.println(String.format("Receipt %s has status %s", receiptId, statusString));
+                iteration += 1;
+
+                System.out.println(String.format("%d. iteration: Receipt %s has status %s", iteration, receiptId, receiptStatus.toString()));
+
+                try {
+                    Thread.sleep(pollTimeout * 1000);
+                } catch (InterruptedException ignore) {}
             }
 
-            receiptService.updateReceiptStatus(receiptId, receiptStatus);
+            if (receiptStatus == ReceiptStatus.PENDING) {
+                receiptService.updateReceiptStatus(receiptId, ReceiptStatus.CANCELED);
+            } else {
+                receiptService.updateReceiptStatus(receiptId, receiptStatus);
+            }
         } catch (JsonProcessingException e) {
             receiptService.updateReceiptStatus(receiptId, ReceiptStatus.CANCELED);
             e.printStackTrace();
