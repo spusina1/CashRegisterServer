@@ -1,5 +1,7 @@
 package ba.unsa.etf.si.local_server.models.transactions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +17,12 @@ import javax.validation.constraints.NotBlank;
 public class ReceiptItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Long id;
+  
+    @JsonProperty("id")
     private Long productId;
+  
     private Double quantity;
 
 }

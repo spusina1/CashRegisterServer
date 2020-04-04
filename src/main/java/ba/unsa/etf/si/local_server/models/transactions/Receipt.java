@@ -1,5 +1,7 @@
 package ba.unsa.etf.si.local_server.models.transactions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +13,13 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "receipts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "receipts", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "receiptId")
+})
 public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,22 +28,24 @@ public class Receipt {
 
     private String receiptId;
 
-    private  ReceiptStatus receiptStatus;
+    @JsonProperty("status")
+    private ReceiptStatus receiptStatus;
 
-    private   Long cashRegisterId;
+    private PaymentMethod paymentMethod;
+
+    private Long cashRegisterId;
 
     private Long officeId;
 
-    private  Long businessId;
+    private Long businessId;
 
     @OneToMany(cascade =  CascadeType.ALL)
     @JoinColumn(name = "receipt_id")
-    private Set<ReceiptItem> receiptItems = new HashSet<>();
-  
+    private Set<ReceiptItem> receiptItems;
+
     private String username;
 
-    private  BigDecimal totalPrice;
-
+    private BigDecimal totalPrice;
 
     private Long timestamp;
 

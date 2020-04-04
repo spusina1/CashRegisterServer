@@ -6,6 +6,7 @@ import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.requests.FilterRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import sun.awt.X11.XQueryTree;
 
 import java.util.List;
 
@@ -30,4 +31,11 @@ public class ProductService {
         productRepository.saveAll(products);
         productRepository.flush();
     }
+
+    public void updateProductQuantity(Long id, Double delta) {
+       Product product = getProduct(id);
+       product.setQuantity(product.getQuantity() + delta);
+       productRepository.save(product);
+    }
+
 }
