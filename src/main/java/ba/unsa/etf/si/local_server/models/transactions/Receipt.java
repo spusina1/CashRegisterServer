@@ -23,7 +23,6 @@ import java.util.Set;
 public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
     private Long id;
 
     private String receiptId;
