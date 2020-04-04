@@ -22,5 +22,7 @@ main_server:
   login_password: ${MAIN_LOGIN_PASSWORD}
   office_id: ${OFFICE_ID}
   business_id: ${BUSINESS_ID}
+  poll_timeout: ${POLL_TIMEOUT:5}
+  poll_attempts: ${POLL_ATTEMPTS:10}
 cron:
   main_fetch: ${MAIN_SYNC_CRON_TIME}
