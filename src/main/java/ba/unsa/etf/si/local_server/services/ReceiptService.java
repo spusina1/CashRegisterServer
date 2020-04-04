@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.time.Instant;
+import java.util.stream.Collectors;
 
 import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.*;
 
@@ -36,12 +36,12 @@ public class ReceiptService {
     private final ProductService productService;
     private final MainReceiptService mainReceiptService;
 
-
     @Value("${main_server.office_id}")
     private long officeId;
 
     @Value("${main_server.business_id}")
     private long businessId;
+
 
     public ResponseEntity<Object> deleteReceipt(Long id){
         Optional<Receipt> receipt = receiptRepository.findById(id);
@@ -57,30 +57,27 @@ public class ReceiptService {
     public Set<SellerAppReceiptsResponse> getSellerReceipts() {
         Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(UNPROCESSED);
 
-        Set<SellerAppReceiptsResponse> sellerAppReceiptsResponses = receipts
+        return receipts
                 .stream()
                 .map(r -> new SellerAppReceiptsResponse(r.getId(), r.getReceiptItems()
                         .stream()
                         .map(receiptItem -> new SellerAppReceiptItemsResponse(receiptItem.getProductId(), receiptItem.getQuantity()))
                         .collect(Collectors.toSet())))
                 .collect(Collectors.toSet());
-        return  sellerAppReceiptsResponses;
     }
 
-    private final ProductRepository productRepository;
-
     public String checkRequest(ReceiptRequest receiptRequest) {
-        Set<ReceiptItem> items = receiptRequest
-                    .getReceiptItems()
-                    .stream()
-                    .map(receiptItemRequest -> new ReceiptItem(
-                            null,
-                            receiptItemRequest.getId(),
-                            receiptItemRequest.getQuantity()))
-                    .collect(Collectors.toSet());
+        Receipt receipt;
 
-        String[] receiptIdData = receiptRequest.getReceiptId().split("-");
-        Long now = Long.parseLong(receiptIdData[3]);
+        if(receiptRequest.getId() == null) {
+            receipt = makeReceipt(receiptRequest);
+        } else {
+            receipt = getReceiptById(receiptRequest.getId());
+
+            if(receipt.getReceiptStatus() != UNPROCESSED) {
+                return "Already processed request!";
+            }
+        }
 
         PaymentMethod paymentMethod;
 
@@ -92,24 +89,22 @@ public class ReceiptService {
 
         ReceiptStatus receiptStatus = paymentMethod == PaymentMethod.PAY_APP ? PENDING : PAID;
 
-        Receipt receipt = new Receipt(
-                null,
-                receiptRequest.getReceiptId(),
-                receiptStatus,
-                paymentMethod,
-                receiptRequest.getCashRegisterId(),
-                officeId,
-                businessId,
-                items,
-                receiptRequest.getUsername(),
-                getTotalPrice(items),
-                now
-        );
+        String[] receiptIdData = receiptRequest.getReceiptId().split("-");
+        Long timestamp = Long.parseLong(receiptIdData[3]);
 
-        items.forEach(receiptItem ->
-            productService.updateProductQuantity(receiptItem.getProductId(), -1 * receiptItem.getQuantity())
-        );
+        receipt.setReceiptId(receiptRequest.getReceiptId());
+        receipt.setCashRegisterId(receiptRequest.getCashRegisterId());
+        receipt.setOfficeId(officeId);
+        receipt.setBusinessId(businessId);
+        receipt.setUsername(receiptRequest.getUsername());
+        receipt.setReceiptStatus(receiptStatus);
+        receipt.setPaymentMethod(paymentMethod);
+        receipt.setTimestamp(timestamp);
+        receipt.setTotalPrice(getTotalPrice(receipt.getReceiptItems()));
 
+        receipt.getReceiptItems().forEach(receiptItem ->
+                productService.updateProductQuantity(receiptItem.getProductId(), -1 * receiptItem.getQuantity())
+        );
 
         receiptRepository.save(receipt);
         mainReceiptService.postReceiptToMain(receipt);
@@ -119,6 +114,27 @@ public class ReceiptService {
         }
 
         return "Successfully created receipt";
+    }
+
+    private Receipt makeReceipt(ReceiptRequest receiptRequest) {
+        Set<ReceiptItem> items = receiptRequest
+                .getReceiptItems()
+                .stream()
+                .map(receiptItemRequest -> new ReceiptItem(
+                        null,
+                        receiptItemRequest.getId(),
+                        receiptItemRequest.getQuantity()))
+                .collect(Collectors.toSet());
+
+        Receipt receipt = new Receipt();
+        receipt.setReceiptItems(items);
+        return receipt;
+    }
+
+    public Receipt getReceiptById(Long id) {
+        return receiptRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No receipt with ID " + id));
     }
 
     public String reverseReceipt(String id) {
@@ -182,31 +198,16 @@ public class ReceiptService {
                 .orElseThrow(() -> new ResourceNotFoundException("No such receipt!"));
     }
 
-    private BigDecimal getTotalPrice(Set<ReceiptItem> items){
-        return items
-                .stream()
-                .map(item ->
-                        productService
-                                .getProduct(item.getProductId())
-                                .getPrice()
-                                .multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     public List<Receipt> getReceipts(Long cashRegisterId) {
         return receiptRepository.findByCashRegisterId(cashRegisterId);
     }
 
     public String saveOrder(SellerAppRequest receiptItems) {
         if(receiptItems.getReceiptItems() != null){
-            Instant instant = Instant.now();
-            long timeStampMillis = instant.toEpochMilli();
             Receipt newReceipt = new Receipt();
 
             newReceipt.setReceiptStatus(UNPROCESSED);
-            newReceipt.setBusinessId(1L);
-            newReceipt.setOfficeId(1L);
-            newReceipt.setTimestamp(timeStampMillis);
+            newReceipt.setCashRegisterId(-1L);
 
             Set<ReceiptItem> items = receiptItems
                     .getReceiptItems()
@@ -214,37 +215,19 @@ public class ReceiptService {
                     .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
                     .collect(Collectors.toSet());
             newReceipt.setReceiptItems(items);
-            newReceipt.setTotalPrice(getTotalPrice(items));
             receiptRepository.save(newReceipt);
             return  "Order is successfully saved!";
         }
         return "";
     }
 
-    public void updateReceipt(Long id, ReceiptRequest receiptRequest) {
-        Instant instant = Instant.now();
-        long timeStampMillis = instant.toEpochMilli();
-        Receipt receipt = receiptRepository.getOne(id);
-        receipt.setReceiptStatus(PAYED);
-        receipt.setCashRegisterId(receiptRequest.getCashRegisterId());
-        receipt.setUsername(receiptRequest.getUsername());
-        receipt.setTimestamp(timeStampMillis);
-        receiptRepository.save(receipt);
-    }
-
-    public  BigDecimal getTotalPrice(Set<ReceiptItem> items){
+    public BigDecimal getTotalPrice(Set<ReceiptItem> items){
         BigDecimal sum = BigDecimal.valueOf(0);
         for(ReceiptItem item: items){
-            Product product = productRepository
-                    .findById(item.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("No such product!"));
+            Product product = productService.getProduct(item.getProductId());
             BigDecimal newPrice = product.getPrice();
             BigDecimal discount = newPrice.multiply(BigDecimal.valueOf(product.getDiscount()/100.));
-            System.out.println("Ovdje1:");
-            System.out.println(discount);
             newPrice=newPrice.subtract(discount);
-            System.out.println("Ovdje:");
-            System.out.println(newPrice);
             sum = sum.add(newPrice.multiply(BigDecimal.valueOf(item.getQuantity())));
         }
         return sum;

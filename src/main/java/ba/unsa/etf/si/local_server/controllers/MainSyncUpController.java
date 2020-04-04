@@ -24,7 +24,7 @@ public class MainSyncUpController {
     }
 
     @Secured("ROLE_OFFICEMAN")
-    @GetMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<?> obtainIds() {
         CashRegisterResponse response = cashRegisterService.registerCashRegister();
         return ResponseEntity.ok(response);
