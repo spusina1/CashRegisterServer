@@ -29,13 +29,12 @@ import javax.validation.Valid;
 public class ReceiptController {
     private final ReceiptService receiptService;
 
-    // TODO: Change all routes that work with seller app to start with /api/orders
-    @DeleteMapping(value = "/api/receipts/{id}")
+    @DeleteMapping(value = "/api/orders/{id}")
     public ResponseEntity<Object> deleteReceipt(@PathVariable("id") Long id) {
         return receiptService.deleteReceipt(id);
     }
 
-    @GetMapping("/api/sellerAppReceipts")
+    @GetMapping("/api/orders")
     public ResponseEntity<?> getSellerAppReceipts() {
         return ResponseEntity.ok(receiptService.getSellerReceipts());
     }
@@ -46,7 +45,7 @@ public class ReceiptController {
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
 
-    @PostMapping("/api/order")
+    @PostMapping("/api/orders")
     public ResponseEntity<?> saveOrder(@Valid @RequestBody SellerAppRequest receiptItems){
         String responseMessage = receiptService.saveOrder(receiptItems);
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
