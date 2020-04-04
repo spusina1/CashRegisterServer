@@ -198,17 +198,6 @@ public class ReceiptService {
                 .orElseThrow(() -> new ResourceNotFoundException("No such receipt!"));
     }
 
-    private BigDecimal getTotalPrice(Set<ReceiptItem> items){
-        return items
-                .stream()
-                .map(item ->
-                        productService
-                                .getProduct(item.getProductId())
-                                .getPrice()
-                                .multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     public List<Receipt> getReceipts(Long cashRegisterId) {
         return receiptRepository.findByCashRegisterId(cashRegisterId);
     }
@@ -232,23 +221,16 @@ public class ReceiptService {
         return "";
     }
 
-
-//    public  BigDecimal getTotalPrice(Set<ReceiptItem> items){
-//        BigDecimal sum = BigDecimal.valueOf(0);
-//        for(ReceiptItem item: items){
-//            Product product = productRepository
-//                    .findById(item.getProductId())
-//                    .orElseThrow(() -> new ResourceNotFoundException("No such product!"));
-//            BigDecimal newPrice = product.getPrice();
-//            BigDecimal discount = newPrice.multiply(BigDecimal.valueOf(product.getDiscount()/100.));
-//            System.out.println("Ovdje1:");
-//            System.out.println(discount);
-//            newPrice=newPrice.subtract(discount);
-//            System.out.println("Ovdje:");
-//            System.out.println(newPrice);
-//            sum = sum.add(newPrice.multiply(BigDecimal.valueOf(item.getQuantity())));
-//        }
-//        return sum;
-//    }
+    public BigDecimal getTotalPrice(Set<ReceiptItem> items){
+        BigDecimal sum = BigDecimal.valueOf(0);
+        for(ReceiptItem item: items){
+            Product product = productService.getProduct(item.getProductId());
+            BigDecimal newPrice = product.getPrice();
+            BigDecimal discount = newPrice.multiply(BigDecimal.valueOf(product.getDiscount()/100.));
+            newPrice=newPrice.subtract(discount);
+            sum = sum.add(newPrice.multiply(BigDecimal.valueOf(item.getQuantity())));
+        }
+        return sum;
+    }
 
 }
