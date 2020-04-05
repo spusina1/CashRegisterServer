@@ -144,6 +144,9 @@ public class ReceiptService {
             return "Cannot reverse receipt reversion";
         }
 
+        receipt.setReceiptStatus(DELETED);
+        receiptRepository.saveAndFlush(receipt);
+
         Receipt reversedReceipt = getReversedReceipt(receipt);
 
         reversedReceipt
@@ -199,7 +202,11 @@ public class ReceiptService {
     }
 
     public List<Receipt> getReceipts(Long cashRegisterId) {
-        return receiptRepository.findByCashRegisterId(cashRegisterId);
+        return receiptRepository
+                .findByCashRegisterId(cashRegisterId)
+                .stream()
+                .filter(receipt -> receipt.getReceiptStatus() != DELETED)
+                .collect(Collectors.toList());
     }
 
     public String saveOrder(SellerAppRequest receiptItems) {
