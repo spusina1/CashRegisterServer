@@ -48,3 +48,81 @@ Korisnik Cash Register desktop aplikacije i Seller mobilne aplikacije treba biti
 * Implementirati metodu Product Controllera koja vraća filtrirane proizvode 
 * Uraditi push koda
 * Napraviti pull request
+
+# Feature
+Spašavanje narudžbi koje je kreirala Seller App
+## Item
+Korisnik Seller mobilne aplikacije treba biti u mogućnosti spasiti narudžbu.
+### Task
+* Implementirati Receipt model
+* Implementirati Receipt service
+* Implementirati Receipt repository
+* Implementirati POST metodu za spremanje narudžbe
+* Implementirati spašavanje narudžbe u formi računa
+* Vratiti odgovor klijentu
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Pregled svih računa koje je kreirala Seller App
+## Item
+Korisnik Cash Register aplikacije treba biti u mogućnosti pregledati sve račune koje je kreirala Seller App.
+### Task
+* Implementirati GET metodu za dobavljanje računa
+* Provjera da li je račun kreirala mobilna app
+* Implementirati dobavljanje računa
+* Vratiti odgovor klijentu
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Pregled svih računa
+## Item
+Korisnik Cash Register aplikacije treba biti u mogućnosti pregledati sve račune.
+### Task
+* Implementirati GET metodu za dobavljanje računa
+* Implementirati dobavljanje računa
+* Vratiti odgovor klijentu
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Spašavanje računa 
+## Item
+Korisnik Cash Register aplikacije treba biti u mogućnosti spasiti račun.
+### Task
+* Implementirati POST metodu za spremanje računa
+* Provjera da li je račun kreirala mobilna app
+* Implementirati provjeru da li je račun već spašen
+* Implementirati spašavanje računa
+* Vratiti odgovor klijentu
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Brisanje računa
+## Item
+Korisnik Cash Register aplikacije treba biti u mogućnosti obrisati račun koji neće biti plaćen.
+### Task
+* Implementirati DELETE metodu za brisanje računa
+* Provjera da li je račun već obrisan
+* Implementirati brisanje računa
+* Vratiti odgovor klijentu
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Plaćanje računa
+## Item
+Korisnik treba biti u mogućnosti platiti račun pomoću PayApp.
+### Task
+* Primanje računa od Cash Register App koji se treba platiti.
+* Provjera vrste plaćanja
+* Slanej računa Main serveru
+* Provjere odgovora od Main servera
+* Slanje odgovora aplikaciji da li je račun plaćen
+* Spašavanje računa
+* Uraditi push koda
+* Napraviti pull request
+
+
