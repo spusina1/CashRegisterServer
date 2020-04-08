@@ -33,4 +33,8 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String imageBase64;
 
+    private String barcode;
+
+    private String description;
+
 }
