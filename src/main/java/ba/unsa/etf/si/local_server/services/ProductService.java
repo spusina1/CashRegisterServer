@@ -2,13 +2,17 @@ package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.Product;
+import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.requests.FilterRequest;
+import ba.unsa.etf.si.local_server.requests.ReceiptItemRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import sun.awt.X11.XQueryTree;
+
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @AllArgsConstructor
 @Service
@@ -36,6 +40,15 @@ public class ProductService {
        Product product = getProduct(id);
        product.setQuantity(product.getQuantity() + delta);
        productRepository.save(product);
+    }
+
+    public boolean checkProducts(List<ReceiptItemRequest> items) {
+        AtomicBoolean log = new AtomicBoolean(true);
+
+        items.forEach(receiptItem -> {
+            if(!productRepository.findById(receiptItem.getId()).isPresent()) log.set(false);
+        });
+        return log.get();
     }
 
 }

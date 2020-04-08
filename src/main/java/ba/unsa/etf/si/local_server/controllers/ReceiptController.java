@@ -1,6 +1,7 @@
 package ba.unsa.etf.si.local_server.controllers;
 
 import ba.unsa.etf.si.local_server.models.transactions.Receipt;
+import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import ba.unsa.etf.si.local_server.responses.ReceiptResponse;
@@ -62,6 +63,12 @@ public class ReceiptController {
     public ResponseEntity<?> reverseReceipt(@PathVariable String id){
         String responseMessage = receiptService.reverseReceipt(id);
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+    }
+
+    @PutMapping("api/orders")
+    public  ResponseEntity<?> editOrder(@Valid @RequestBody EditOrderRequest editOrderRequest){
+        String responseMessage = receiptService.editOrder(editOrderRequest);
+        return  ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
 
 }

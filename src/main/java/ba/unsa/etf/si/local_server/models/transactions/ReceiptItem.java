@@ -22,7 +22,8 @@ public class ReceiptItem {
   
     @JsonProperty("id")
     private Long productId;
-  
+
+
     private Double quantity;
 
 }
