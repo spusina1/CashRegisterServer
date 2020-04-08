@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @AllArgsConstructor
 @Service
 public class NotificationService {
@@ -23,4 +26,13 @@ public class NotificationService {
         }
         return "";
     }
+
+    public List<Notification> getNotifications(Long id) {
+        return notificationRepository
+                .findAll()
+                .stream()
+                .filter(n -> n.getId() > id)
+                .collect(Collectors.toList());
+    }
+
 }
