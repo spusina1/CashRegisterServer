@@ -18,4 +18,10 @@ public class CashRegisterController {
         String responseMessage = cashRegisterService.openRegister(id);
         return ResponseEntity.ok(responseMessage);
     }
+
+    @PostMapping("/api/close")
+    public ResponseEntity<?> closeRegister(@PathVariable Long id){
+        String responseMessage = cashRegisterService.closeRegister(id);
+        return ResponseEntity.ok(responseMessage);
+    }
 }
