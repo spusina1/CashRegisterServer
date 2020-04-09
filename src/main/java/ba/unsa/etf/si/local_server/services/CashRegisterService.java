@@ -74,7 +74,10 @@ public class CashRegisterService {
         return "Cash register " + id + " closed!";
     }
 
-    public boolean isCashRegisterOpen(CashRegister cashRegister){
+    public boolean isCashRegisterOpen(Long id){
+        CashRegister cashRegister = cashRegisterRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
         return cashRegister.getOpen();
     }
 }

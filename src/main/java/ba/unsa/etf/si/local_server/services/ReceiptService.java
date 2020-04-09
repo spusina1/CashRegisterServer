@@ -118,6 +118,9 @@ public class ReceiptService {
     }
 
     private Receipt makeReceipt(ReceiptRequest receiptRequest) {
+        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId()))
+            throw new SecurityException("Cash register is closed!");
+
         Set<ReceiptItem> items = receiptRequest
                 .getReceiptItems()
                 .stream()
