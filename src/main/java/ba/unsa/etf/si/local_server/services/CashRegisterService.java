@@ -73,4 +73,8 @@ public class CashRegisterService {
 
         return "Cash register " + id + " closed!";
     }
+
+    public boolean isCashRegisterOpen(CashRegister cashRegister){
+        return cashRegister.getOpen();
+    }
 }

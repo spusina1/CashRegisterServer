@@ -35,6 +35,7 @@ public class ReceiptService {
     private final ReceiptRepository receiptRepository;
     private final ProductService productService;
     private final MainReceiptService mainReceiptService;
+    private final CashRegisterService cashRegisterService;
 
     @Value("${main_server.office_id}")
     private long officeId;
