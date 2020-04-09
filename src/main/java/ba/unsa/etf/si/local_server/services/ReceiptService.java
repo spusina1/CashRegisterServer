@@ -1,5 +1,6 @@
 package ba.unsa.etf.si.local_server.services;
 
+import ba.unsa.etf.si.local_server.exceptions.AppException;
 import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.transactions.*;
@@ -68,6 +69,9 @@ public class ReceiptService {
     }
 
     public String checkRequest(ReceiptRequest receiptRequest) {
+        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId()))
+            throw new AppException("Cash register is closed!");
+
         Receipt receipt;
 
         if(receiptRequest.getId() == null) {
@@ -118,9 +122,6 @@ public class ReceiptService {
     }
 
     private Receipt makeReceipt(ReceiptRequest receiptRequest) {
-        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId()))
-            throw new SecurityException("Cash register is closed!");
-
         Set<ReceiptItem> items = receiptRequest
                 .getReceiptItems()
                 .stream()
