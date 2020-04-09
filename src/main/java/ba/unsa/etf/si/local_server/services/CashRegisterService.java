@@ -53,22 +53,24 @@ public class CashRegisterService {
     }
 
     public String openRegister(Long id){
-        Optional<CashRegister> cashRegister = cashRegisterRepository.findById(id);
+        CashRegister cashRegister = cashRegisterRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
 
-        if(cashRegister.isPresent()){
-            cashRegister.setOpen(true);
-            return "Cash register " + id + " opened!";
-        }
-        else return "No register with id " + id;
+        cashRegister.setOpen(true);
+        cashRegisterRepository.save(cashRegister);
+
+        return "Cash register " + id + " opened!";
     }
 
     public String closeRegister(Long id){
-        Optional<CashRegister> cashRegister = cashRegisterRepository.findById(id);
+        CashRegister cashRegister = cashRegisterRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
 
-        if(cashRegister.isPresent()){
-            cashRegister.setOpen(false);
-            return "Cash register " + id + " closed!";
-        }
-        else return "No register with id " + id;
+        cashRegister.setOpen(false);
+        cashRegisterRepository.save(cashRegister);
+
+        return "Cash register " + id + " closed!";
     }
 }
