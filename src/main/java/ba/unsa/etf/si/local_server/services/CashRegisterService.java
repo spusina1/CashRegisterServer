@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -49,5 +50,15 @@ public class CashRegisterService {
 
     public void updateBusinessName(String businessName) {
         this.businessName = businessName;
+    }
+
+    public String openRegister(Long id){
+        Optional<CashRegister> cashRegister = cashRegisterRepository.findById(id);
+
+        if(cashRegister.isPresent()){
+            cashRegister.setOpen(true);
+            return "Cash register " + id + " opened!";
+        }
+        else return "No register with id " + id;
     }
 }
