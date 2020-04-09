@@ -61,4 +61,14 @@ public class CashRegisterService {
         }
         else return "No register with id " + id;
     }
+
+    public String closeRegister(Long id){
+        Optional<CashRegister> cashRegister = cashRegisterRepository.findById(id);
+
+        if(cashRegister.isPresent()){
+            cashRegister.setOpen(false);
+            return "Cash register " + id + " closed!";
+        }
+        else return "No register with id " + id;
+    }
 }
