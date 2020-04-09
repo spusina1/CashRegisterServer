@@ -15,6 +15,7 @@ public class CashRegisterController {
 
     @PostMapping("/api/open")
     public ResponseEntity<?> openRegister(@PathVariable Long id){
-        if()
+        String responseMessage = cashRegisterService.openRegister(id);
+        return ResponseEntity.ok(responseMessage);
     }
 }
