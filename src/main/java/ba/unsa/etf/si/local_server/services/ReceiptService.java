@@ -3,6 +3,8 @@ package ba.unsa.etf.si.local_server.services;
 import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.transactions.*;
+import ba.unsa.etf.si.local_server.repositories.ReceiptItemRepository;
+import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -35,6 +37,7 @@ import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.*;
 @Service
 public class ReceiptService {
     private final ReceiptRepository receiptRepository;
+    private final ReceiptItemRepository receiptItemRepository;
     private final ProductService productService;
     private final MainReceiptService mainReceiptService;
 
@@ -242,6 +245,28 @@ public class ReceiptService {
         return sum;
     }
 
+    public String editOrder(EditOrderRequest editOrderRequest) {
+        Optional<Receipt> order = receiptRepository.findById(editOrderRequest.getId());
+        if(order.isPresent()){
+            ReceiptStatus receiptStatus = order.get().getReceiptStatus();
+            if(receiptStatus != UNPROCESSED) return "Request denied. Receipt cannot be edited!";
+
+            else if(productService.checkProducts(editOrderRequest.getReceiptItems())){
+                receiptItemRepository.deleteByReceipt(order.get().getId());
+                Set<ReceiptItem> items = editOrderRequest
+                        .getReceiptItems()
+                        .stream()
+                        .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
+                        .collect(Collectors.toSet());
+                order.get().setReceiptItems(items);
+                receiptItemRepository.saveAll(items);
+                return "Order is successfully changed!";
+            }
+            else return "Request denied. Incorrect productId!";
+        }
+        return "Request denied. Incorrect id!";
+    }
+
     public List<Receipt> getDailyReceipts(Long cashRegisterId) {
 
         return receiptRepository
@@ -250,6 +275,7 @@ public class ReceiptService {
                 .filter(receipt -> this.compareTimestamps(receipt.getTimestamp()))
                 .collect(Collectors.toList());
     }
+  
     private boolean compareTimestamps(Long timestamp) {
         if(timestamp==null) return false;
         Date date = new Date(timestamp);
