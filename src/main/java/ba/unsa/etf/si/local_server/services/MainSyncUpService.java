@@ -107,8 +107,10 @@ public class MainSyncUpService {
         String image = productNode.get("image").asText();
         String unit = productNode.get("unit").asText();
         Integer discount = productNode.get("discount").get("percentage").asInt();
+        String barcode = productNode.get("barcode").asText();
+        String description = productNode.get("description").asText();
 
-        return new Product(id, name, quantity, price, discount, unit, image);
+        return new Product(id, name, quantity, price, discount, unit, image, barcode, description);
     }
 
     private User mapJsonToUser(JsonNode jsonNode) {
