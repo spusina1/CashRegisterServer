@@ -13,4 +13,5 @@ public class CashRegisterResponse {
     private Long officeId;
     private Long businessId;
     private String businessName;
+    private String uuid;
 }

@@ -31,17 +31,12 @@ public class CashRegisterService {
         cashRegister.setTaken(true);
         cashRegisterRepository.save(cashRegister);
 
-        return new CashRegisterResponse(
-                cashRegister.getId(),
-                cashRegister.getName(),
-                officeID,
-                businessID,
-                businessName);
+        return makeCashRegisterResponse(cashRegister);
     }
 
     public void batchInsertCashRegisters(List<CashRegister> cashRegisters) {
         cashRegisters.forEach(cashRegister ->
-                cashRegisterRepository.saveCashRegister(cashRegister.getId(), cashRegister.getName())
+                cashRegisterRepository.saveCashRegister(cashRegister.getId(), cashRegister.getName(), cashRegister.getUuid())
         );
         cashRegisterRepository.flush();
     }
@@ -78,4 +73,23 @@ public class CashRegisterService {
                 .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
         return cashRegister.isOpen();
     }
+
+    public CashRegisterResponse getCashRegisterData(Long id) {
+        CashRegister cashRegister = cashRegisterRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No available cash registers!"));
+
+        return makeCashRegisterResponse(cashRegister);
+    }
+
+    private CashRegisterResponse makeCashRegisterResponse(CashRegister cashRegister) {
+        return new CashRegisterResponse(
+                cashRegister.getId(),
+                cashRegister.getName(),
+                officeID,
+                businessID,
+                businessName,
+                cashRegister.getUuid());
+    }
+
 }

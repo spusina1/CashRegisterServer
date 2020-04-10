@@ -15,7 +15,8 @@ public interface CashRegisterRepository extends JpaRepository<CashRegister, Long
     @Transactional
     @Query(
             nativeQuery = true,
-            value = "insert into cash_registers(id, name, taken, open) values (?1, ?2, false, false) on conflict (id) do nothing"
+            value = "insert into cash_registers(id, name, uuid, taken, open) values (?1, ?2, ?3, false, false)" +
+                    " on conflict (id) do update set uuid = ?3"
     )
-    int saveCashRegister(Long id, String name);
+    int saveCashRegister(Long id, String name, String uuid);
 }
