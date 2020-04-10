@@ -64,4 +64,10 @@ public class ReceiptController {
         return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
 
+    @GetMapping("/api/report")
+    public ResponseEntity<?> getDailyReceipts(@RequestParam(name = "cash_register_id", required = false) Long cashRegisterId) {
+        List<Receipt> receipts = receiptService.getDailyReceipts(cashRegisterId);
+        return ResponseEntity.ok(receipts);
+    }
+
 }
