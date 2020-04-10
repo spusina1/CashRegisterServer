@@ -17,6 +17,7 @@ public class CashRegister {
     @Id
     private Long id;
     private String name;
+    private String uuid;
     private boolean taken;
     private boolean open;
 }
