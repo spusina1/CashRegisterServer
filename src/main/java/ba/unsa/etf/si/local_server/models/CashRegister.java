@@ -18,4 +18,5 @@ public class CashRegister {
     private Long id;
     private String name;
     private boolean taken;
+    private boolean open;
 }

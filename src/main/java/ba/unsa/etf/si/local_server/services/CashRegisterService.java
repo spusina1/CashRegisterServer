@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -49,5 +50,34 @@ public class CashRegisterService {
 
     public void updateBusinessName(String businessName) {
         this.businessName = businessName;
+    }
+
+    public String openRegister(Long id){
+        CashRegister cashRegister = cashRegisterRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
+
+        cashRegister.setOpen(true);
+        cashRegisterRepository.save(cashRegister);
+
+        return "Cash register " + id + " opened!";
+    }
+
+    public String closeRegister(Long id){
+        CashRegister cashRegister = cashRegisterRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
+
+        cashRegister.setOpen(false);
+        cashRegisterRepository.save(cashRegister);
+
+        return "Cash register " + id + " closed!";
+    }
+
+    public boolean isCashRegisterOpen(Long id){
+        CashRegister cashRegister = cashRegisterRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
+        return cashRegister.getOpen();
     }
 }
