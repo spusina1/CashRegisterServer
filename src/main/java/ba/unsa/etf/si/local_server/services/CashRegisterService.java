@@ -1,6 +1,5 @@
 package ba.unsa.etf.si.local_server.services;
 
-import ba.unsa.etf.si.local_server.exceptions.AppException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.CashRegister;
 import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
