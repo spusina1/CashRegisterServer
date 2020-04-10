@@ -49,4 +49,6 @@ public class Receipt {
 
     private Long timestamp;
 
+    private String message;
+
 }

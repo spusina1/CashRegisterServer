@@ -2,6 +2,7 @@ package ba.unsa.etf.si.local_server.controllers;
 
 import ba.unsa.etf.si.local_server.models.transactions.Receipt;
 import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
+import ba.unsa.etf.si.local_server.requests.GuestOrderRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import ba.unsa.etf.si.local_server.responses.ReceiptResponse;
@@ -34,12 +35,24 @@ public class ReceiptController {
     public ResponseEntity<?> getSellerAppReceipts() {
         return ResponseEntity.ok(receiptService.getSellerReceipts());
     }
+
+    @GetMapping("/api/guestOrders")
+    public ResponseEntity<?> getGuestOrders() {
+        return ResponseEntity.ok(receiptService.getGuestReceipts());
+    }
     
     @PostMapping("/api/orders")
     public ResponseEntity<?> saveOrder(@Valid @RequestBody SellerAppRequest receiptItems){
         String responseMessage = receiptService.saveOrder(receiptItems);
-        return ResponseEntity.ok(responseMessage);
+        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
     }
+
+    @PostMapping("/api/guestOrders")
+    public ResponseEntity<?> saveGuestOrder(@Valid @RequestBody GuestOrderRequest guestOrderRequest){
+        String responseMessage = receiptService.saveGuestOrder(guestOrderRequest);
+        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+    }
+
 
     @PostMapping("/api/receipts")
     public ResponseEntity<?> saveReceipt(@Valid @RequestBody ReceiptRequest receiptRequest) {
