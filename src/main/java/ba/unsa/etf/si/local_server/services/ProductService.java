@@ -9,7 +9,6 @@ import ba.unsa.etf.si.local_server.requests.ReceiptItemRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;

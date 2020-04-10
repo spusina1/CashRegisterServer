@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -265,7 +267,21 @@ public class ReceiptService {
         return "Request denied. Incorrect id!";
     }
 
+    public List<Receipt> getDailyReceipts(Long cashRegisterId) {
 
-
+        return receiptRepository
+                .findByCashRegisterId(cashRegisterId)
+                .stream()
+                .filter(receipt -> this.compareTimestamps(receipt.getTimestamp()))
+                .collect(Collectors.toList());
+    }
+  
+    private boolean compareTimestamps(Long timestamp) {
+        if(timestamp==null) return false;
+        Date date = new Date(timestamp);
+        Date currentDate = new Date(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        return sdf.format(currentDate).equals(sdf.format(date));
+    }
 
 }
