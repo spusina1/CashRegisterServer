@@ -139,7 +139,7 @@ public class MainSyncUpService {
     private CashRegister mapJsonToCashRegister(JsonNode jsonNode) {
         String name = jsonNode.get("name").asText();
         Long id = jsonNode.get("id").asLong();
-        return new CashRegister(id, name, false);
+        return new CashRegister(id, name, false, false);
     }
 
 }

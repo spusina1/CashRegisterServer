@@ -78,6 +78,6 @@ public class CashRegisterService {
         CashRegister cashRegister = cashRegisterRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
-        return cashRegister.getOpen();
+        return cashRegister.isOpen();
     }
 }
