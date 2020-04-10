@@ -2,6 +2,7 @@ package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.exceptions.AppException;
 import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
+import ba.unsa.etf.si.local_server.exceptions.CashRegisterClosedException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.transactions.*;
 import ba.unsa.etf.si.local_server.repositories.ReceiptItemRepository;
@@ -74,8 +75,9 @@ public class ReceiptService {
     }
 
     public String checkRequest(ReceiptRequest receiptRequest) {
-        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId()))
-            throw new AppException("Cash register is closed!");
+        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId())) {
+            throw new CashRegisterClosedException("Cash register is closed!");
+        }
 
         Receipt receipt;
 
@@ -252,11 +254,14 @@ public class ReceiptService {
 
     public String editOrder(EditOrderRequest editOrderRequest) {
         Optional<Receipt> order = receiptRepository.findById(editOrderRequest.getId());
-        if(order.isPresent()){
+        if(order.isPresent()) {
             ReceiptStatus receiptStatus = order.get().getReceiptStatus();
-            if(receiptStatus != UNPROCESSED) return "Request denied. Receipt cannot be edited!";
 
-            else if(productService.checkProducts(editOrderRequest.getReceiptItems())){
+            if(receiptStatus != UNPROCESSED) {
+                return "Request denied. Receipt cannot be edited!";
+            }
+
+            else if(productService.checkProducts(editOrderRequest.getReceiptItems())) {
                 receiptItemRepository.deleteByReceipt(order.get().getId());
                 Set<ReceiptItem> items = editOrderRequest
                         .getReceiptItems()
@@ -273,14 +278,13 @@ public class ReceiptService {
     }
 
     public List<Receipt> getDailyReceipts(Long cashRegisterId) {
-
         return receiptRepository
                 .findByCashRegisterId(cashRegisterId)
                 .stream()
-                .filter(receipt -> this.compareTimestamps(receipt.getTimestamp()))
+                .filter(receipt -> compareTimestamps(receipt.getTimestamp()))
                 .collect(Collectors.toList());
     }
-  
+
     private boolean compareTimestamps(Long timestamp) {
         if(timestamp==null) return false;
         Date date = new Date(timestamp);
