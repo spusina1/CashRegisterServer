@@ -12,5 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellerAppRequest {
+    private String message;
     private List<ReceiptItemRequest> receiptItems;
 }
