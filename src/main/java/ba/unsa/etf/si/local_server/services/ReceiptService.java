@@ -7,6 +7,8 @@ import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.models.transactions.*;
 import ba.unsa.etf.si.local_server.repositories.ReceiptItemRepository;
 import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
+import ba.unsa.etf.si.local_server.requests.GuestOrderRequest;
+import ba.unsa.etf.si.local_server.responses.GuestOrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -197,7 +199,8 @@ public class ReceiptService {
                 items,
                 receipt.getUsername(),
                 reversedTotalPrice,
-                new Date().getTime()
+                new Date().getTime(),
+                null
         );
     }
 
@@ -225,7 +228,14 @@ public class ReceiptService {
         if(receiptItems.getReceiptItems() != null){
             Receipt newReceipt = new Receipt();
 
-            newReceipt.setReceiptStatus(UNPROCESSED);
+            if(!receiptItems.getMessage().equals("")){
+                newReceipt.setReceiptStatus(GUEST_ORDER);
+                newReceipt.setMessage(receiptItems.getMessage());
+            }
+            else {
+                newReceipt.setReceiptStatus(UNPROCESSED);
+            }
+
             newReceipt.setCashRegisterId(-1L);
 
             Set<ReceiptItem> items = receiptItems
@@ -257,7 +267,7 @@ public class ReceiptService {
         if(order.isPresent()) {
             ReceiptStatus receiptStatus = order.get().getReceiptStatus();
 
-            if(receiptStatus != UNPROCESSED) {
+            if(receiptStatus != UNPROCESSED && receiptStatus!=GUEST_ORDER) {
                 return "Request denied. Receipt cannot be edited!";
             }
 
@@ -293,4 +303,39 @@ public class ReceiptService {
         return sdf.format(currentDate).equals(sdf.format(date));
     }
 
+    public Set<GuestOrderResponse> getGuestReceipts() {
+        Set<Receipt> receipts = receiptRepository.findReceiptByReceiptStatus(GUEST_ORDER);
+
+        return receipts
+                .stream()
+                .map(r -> new GuestOrderResponse(r.getId(), r.getMessage(), r.getReceiptItems()
+                        .stream()
+                        .map(receiptItem -> new SellerAppReceiptItemsResponse(receiptItem.getProductId(), receiptItem.getQuantity()))
+                        .collect(Collectors.toSet())))
+                .collect(Collectors.toSet());
+    }
+
+    public String saveGuestOrder(GuestOrderRequest guestOrderRequest) {
+        Optional<Receipt> order = receiptRepository.findById(guestOrderRequest.getId());
+        if(order.isPresent()) {
+            ReceiptStatus receiptStatus = order.get().getReceiptStatus();
+
+            if(receiptStatus!=GUEST_ORDER) {
+                return "Request denied. Order already closed!";
+            }
+
+                receiptItemRepository.deleteByReceipt(order.get().getId());
+                Set<ReceiptItem> items = guestOrderRequest
+                        .getReceiptItems()
+                        .stream()
+                        .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
+                        .collect(Collectors.toSet());
+                order.get().setReceiptItems(items);
+                receiptItemRepository.saveAll(items);
+                order.get().setReceiptStatus(UNPROCESSED);
+                receiptRepository.save(order.get());
+                return "Order is successfully saved!";
+        }
+        return "Request denied. Incorrect id!";
+    }
 }
