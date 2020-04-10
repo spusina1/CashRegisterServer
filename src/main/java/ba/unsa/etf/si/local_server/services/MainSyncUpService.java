@@ -42,6 +42,7 @@ public class MainSyncUpService {
         userService.batchInsertUsers(users);
         productService.batchInsertProducts(products);
         cashRegisterService.batchInsertCashRegisters(cashRegisters);
+        System.out.println("Yaaay, Synchronisation complete!");
     }
 
     private List<Product> fetchProductsFromMain() {
