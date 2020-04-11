@@ -27,7 +27,7 @@ import java.util.List;
 public class ReceiptController {
     private final ReceiptService receiptService;
 
-    @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER", "ROLE_BARTENDER"})
+    @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
     @GetMapping("/api/orders")
     public ResponseEntity<?> getSellerAppReceipts() {
         return ResponseEntity.ok(receiptService.getSellerReceipts());
@@ -40,7 +40,7 @@ public class ReceiptController {
         return ResponseEntity.ok(new Response(responseMessage));
     }
 
-    @Secured({"ROLE_CASHIER", "ROLE_BARTENDER"})
+    @Secured({"ROLE_CASHIER", "ROLE_BARTENDER", "ROLE_GUEST"})
     @PutMapping("api/orders")
     public  ResponseEntity<?> editOrder(@Valid @RequestBody EditOrderRequest editOrderRequest){
         String responseMessage = receiptService.editOrder(editOrderRequest);
@@ -49,7 +49,7 @@ public class ReceiptController {
 
     @Secured({"ROLE_CASHIER", "ROLE_BARTENDER"})
     @DeleteMapping("/api/orders/{id}")
-    public ResponseEntity<Object> deleteReceipt(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> deleteOrder(@PathVariable("id") Long id) {
         return receiptService.deleteReceipt(id);
     }
 

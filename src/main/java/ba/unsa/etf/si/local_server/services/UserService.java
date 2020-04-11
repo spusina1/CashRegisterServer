@@ -52,7 +52,7 @@ public class UserService {
                 .stream()
                 .map(User::getId)
                 .min(Comparator.comparingLong(id -> id))
-                .orElse(1L);
+                .orElse(1L) - 1;
 
         userRepository.deleteAllInBatch();
         userRepository.flush();
