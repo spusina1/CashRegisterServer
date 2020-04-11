@@ -33,7 +33,7 @@ public class ReceiptController {
         return ResponseEntity.ok(receiptService.getSellerReceipts());
     }
 
-    @Secured({"ROLE_BARTENDER"})
+    @Secured({"ROLE_BARTENDER", "ROLE_GUEST"})
     @PostMapping("/api/orders")
     public ResponseEntity<?> saveOrder(@Valid @RequestBody SellerAppRequest receiptItems){
         String responseMessage = receiptService.saveOrder(receiptItems);
@@ -53,13 +53,13 @@ public class ReceiptController {
         return receiptService.deleteReceipt(id);
     }
 
-    @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER", "ROLE_BARTENDER"})
+    @Secured({"ROLE_OFFICEMAN", "ROLE_BARTENDER"})
     @GetMapping("/api/guest-orders")
     public ResponseEntity<?> getGuestOrders() {
         return ResponseEntity.ok(receiptService.getGuestReceipts());
     }
 
-    @Secured({"ROLE_GUEST"})
+    @Secured({"ROLE_BARTENDER"})
     @PostMapping("/api/guest-orders")
     public ResponseEntity<?> saveGuestOrder(@Valid @RequestBody GuestOrderRequest guestOrderRequest){
         String responseMessage = receiptService.saveGuestOrder(guestOrderRequest);
@@ -94,7 +94,7 @@ public class ReceiptController {
         return ResponseEntity.ok(new Response(responseMessage));
     }
 
-    @Secured({"ROLE_OFFICEMAN"})
+    @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
     @GetMapping("/api/report")
     public ResponseEntity<?> getDailyReceipts(@RequestParam(name = "cash_register_id", required = false) Long cashRegisterId) {
         List<Receipt> receipts = receiptService.getDailyReceipts(cashRegisterId);
