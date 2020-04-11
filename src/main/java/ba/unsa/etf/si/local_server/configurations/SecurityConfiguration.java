@@ -32,6 +32,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final String[] unprotectedRoutes = {
             "/api/login",
+            "/swagger-resources/**",
+            "/swagger-ui.html**",
+            "/webjars/**",
+            "/v2/api-docs"
     };
 
     @Bean
