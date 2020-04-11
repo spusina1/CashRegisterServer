@@ -8,13 +8,10 @@ import ba.unsa.etf.si.local_server.models.transactions.*;
 import ba.unsa.etf.si.local_server.repositories.ReceiptItemRepository;
 import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
 import ba.unsa.etf.si.local_server.requests.GuestOrderRequest;
-import ba.unsa.etf.si.local_server.responses.GuestOrderResponse;
+import ba.unsa.etf.si.local_server.responses.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
-import ba.unsa.etf.si.local_server.responses.SellerAppReceiptItemsResponse;
-import ba.unsa.etf.si.local_server.responses.SellerAppReceiptsResponse;
-import ba.unsa.etf.si.local_server.responses.DeleteReceiptResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import ba.unsa.etf.si.local_server.models.Product;
@@ -58,10 +55,10 @@ public class ReceiptService {
 
         if(receipt.isPresent()) {
             receiptRepository.deleteById(id);
-            return new ResponseEntity<>(new DeleteReceiptResponse("Receipt is successfully deleted!"), HttpStatus.CREATED);
+            return new ResponseEntity<>(new Response("Receipt is successfully deleted!"), HttpStatus.CREATED);
         }
 
-        return new ResponseEntity<>(new DeleteReceiptResponse("Already processed request!"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Response("Already processed request!"), HttpStatus.BAD_REQUEST);
     }
 
     public Set<SellerAppReceiptsResponse> getSellerReceipts() {

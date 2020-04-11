@@ -1,9 +1,8 @@
 package ba.unsa.etf.si.local_server.controllers;
 
 import ba.unsa.etf.si.local_server.models.Notification;
-import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import ba.unsa.etf.si.local_server.requests.SendNotificationRequest;
-import ba.unsa.etf.si.local_server.responses.SaveNotificationResponse;
+import ba.unsa.etf.si.local_server.responses.Response;
 import ba.unsa.etf.si.local_server.services.NotificationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class NotificationController {
     @PostMapping("/api/notifications")
     public ResponseEntity<?> saveNotification(@Valid @RequestBody SendNotificationRequest notificationRequest){
         String responseMessage = notificationService.saveNotification(notificationRequest);
-        return ResponseEntity.ok(new SaveNotificationResponse(responseMessage));
+        return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @GetMapping("/api/notifications/{id}")

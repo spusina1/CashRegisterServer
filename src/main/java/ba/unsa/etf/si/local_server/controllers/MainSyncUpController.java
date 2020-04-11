@@ -1,5 +1,6 @@
 package ba.unsa.etf.si.local_server.controllers;
 
+import ba.unsa.etf.si.local_server.responses.Response;
 import ba.unsa.etf.si.local_server.services.MainSyncUpService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class MainSyncUpController {
     @PostMapping("/sync")
     public ResponseEntity<?> syncDatabases() {
         mainSyncUpService.syncDatabases();
-        return ResponseEntity.ok("Synced...");
+        return ResponseEntity.ok(new Response("Synced..."));
     }
 
 }

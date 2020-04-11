@@ -5,7 +5,7 @@ import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
 import ba.unsa.etf.si.local_server.requests.GuestOrderRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
-import ba.unsa.etf.si.local_server.responses.ReceiptResponse;
+import ba.unsa.etf.si.local_server.responses.Response;
 import ba.unsa.etf.si.local_server.services.ReceiptService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ import java.util.List;
 public class ReceiptController {
     private final ReceiptService receiptService;
 
-    @DeleteMapping(value = "/api/orders/{id}")
+    @DeleteMapping("/api/orders/{id}")
     public ResponseEntity<Object> deleteReceipt(@PathVariable("id") Long id) {
         return receiptService.deleteReceipt(id);
     }
@@ -36,7 +36,7 @@ public class ReceiptController {
         return ResponseEntity.ok(receiptService.getSellerReceipts());
     }
 
-    @GetMapping("/api/guestOrders")
+    @GetMapping("/api/guest-orders")
     public ResponseEntity<?> getGuestOrders() {
         return ResponseEntity.ok(receiptService.getGuestReceipts());
     }
@@ -44,20 +44,20 @@ public class ReceiptController {
     @PostMapping("/api/orders")
     public ResponseEntity<?> saveOrder(@Valid @RequestBody SellerAppRequest receiptItems){
         String responseMessage = receiptService.saveOrder(receiptItems);
-        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+        return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @PostMapping("/api/guestOrders")
     public ResponseEntity<?> saveGuestOrder(@Valid @RequestBody GuestOrderRequest guestOrderRequest){
         String responseMessage = receiptService.saveGuestOrder(guestOrderRequest);
-        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+        return ResponseEntity.ok(new Response(responseMessage));
     }
 
 
     @PostMapping("/api/receipts")
     public ResponseEntity<?> saveReceipt(@Valid @RequestBody ReceiptRequest receiptRequest) {
         String responseMessage = receiptService.checkRequest(receiptRequest);
-        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+        return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @GetMapping("/api/receipts")
@@ -75,13 +75,13 @@ public class ReceiptController {
     @DeleteMapping("/api/receipts/{id}")
     public ResponseEntity<?> reverseReceipt(@PathVariable String id){
         String responseMessage = receiptService.reverseReceipt(id);
-        return ResponseEntity.ok(new ReceiptResponse(responseMessage));
+        return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @PutMapping("api/orders")
     public  ResponseEntity<?> editOrder(@Valid @RequestBody EditOrderRequest editOrderRequest){
         String responseMessage = receiptService.editOrder(editOrderRequest);
-        return  ResponseEntity.ok(new ReceiptResponse(responseMessage));
+        return  ResponseEntity.ok(new Response(responseMessage));
     }
   
     @GetMapping("/api/report")

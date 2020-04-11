@@ -1,8 +1,10 @@
 package ba.unsa.etf.si.local_server.controllers;
 
 import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
+import ba.unsa.etf.si.local_server.responses.Response;
 import ba.unsa.etf.si.local_server.services.CashRegisterService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +17,13 @@ public class CashRegisterController {
     @PostMapping("/api/cash-register/open")
     public ResponseEntity<?> openRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
         String responseMessage = cashRegisterService.openRegister(id);
-        return ResponseEntity.ok(responseMessage);
+        return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @PostMapping("/api/cash-register/close")
     public ResponseEntity<?> closeRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
         String responseMessage = cashRegisterService.closeRegister(id);
-        return ResponseEntity.ok(responseMessage);
+        return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @Secured("ROLE_OFFICEMAN")
