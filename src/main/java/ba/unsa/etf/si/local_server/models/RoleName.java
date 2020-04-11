@@ -9,5 +9,6 @@ public enum RoleName {
     ROLE_MANAGER,
     ROLE_WAREMAN,
     ROLE_PRW,
-    ROLE_PRP
+    ROLE_PRP,
+    ROLE_GUEST
 }
