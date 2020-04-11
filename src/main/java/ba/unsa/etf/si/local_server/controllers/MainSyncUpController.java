@@ -21,4 +21,9 @@ public class MainSyncUpController {
         return ResponseEntity.ok(new Response("Synced..."));
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<?> testRoute() {
+        return ResponseEntity.ok(new Response("This is a test route!"));
+    }
+
 }
