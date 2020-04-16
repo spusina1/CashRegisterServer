@@ -16,13 +16,13 @@ public class MainSyncUpController {
 
     @Secured("ROLE_OFFICEMAN")
     @PostMapping("/sync")
-    public ResponseEntity<?> syncDatabases() {
+    public ResponseEntity<Response> syncDatabases() {
         mainSyncUpService.syncDatabases();
         return ResponseEntity.ok(new Response("Synced..."));
     }
 
     @GetMapping("/test")
-    public ResponseEntity<?> testRoute() {
+    public ResponseEntity<Response> testRoute() {
         return ResponseEntity.ok(new Response("This is a test route!"));
     }
 

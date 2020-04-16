@@ -19,7 +19,7 @@ public class NotificationController {
 
     @Secured({"ROLE_CASHIER", "ROLE_BARTENDER", "ROLE_GUEST"})
     @PostMapping("/api/notifications")
-    public ResponseEntity<?> saveNotification(@Valid @RequestBody SendNotificationRequest notificationRequest){
+    public ResponseEntity<Response> saveNotification(@Valid @RequestBody SendNotificationRequest notificationRequest){
         String responseMessage = notificationService.saveNotification(notificationRequest);
         return ResponseEntity.ok(new Response(responseMessage));
     }
