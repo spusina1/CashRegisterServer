@@ -15,28 +15,28 @@ public class CashRegisterController {
 
     @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
     @PostMapping("/api/cash-register/open")
-    public ResponseEntity<?> openRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
+    public ResponseEntity<Response> openRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
         String responseMessage = cashRegisterService.openRegister(id);
         return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
     @PostMapping("/api/cash-register/close")
-    public ResponseEntity<?> closeRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
+    public ResponseEntity<Response> closeRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
         String responseMessage = cashRegisterService.closeRegister(id);
         return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @Secured("ROLE_OFFICEMAN")
     @PostMapping("/api/cash-register/register")
-    public ResponseEntity<?> obtainIds() {
+    public ResponseEntity<CashRegisterResponse> obtainIds() {
         CashRegisterResponse response = cashRegisterService.registerCashRegister();
         return ResponseEntity.ok(response);
     }
 
     @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
     @GetMapping("/api/cash-register/data")
-    public ResponseEntity<?> obtainCashRegisterData(@RequestParam(required = false, name = "cash_register_id") Long id) {
+    public ResponseEntity<CashRegisterResponse> obtainCashRegisterData(@RequestParam(required = false, name = "cash_register_id") Long id) {
         CashRegisterResponse response = cashRegisterService.getCashRegisterData(id);
         return ResponseEntity.ok(response);
     }

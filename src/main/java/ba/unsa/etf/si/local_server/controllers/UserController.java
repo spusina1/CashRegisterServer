@@ -22,14 +22,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         String jwt = userService.authenticateUser(loginRequest);
         return ResponseEntity.ok(new LoginResponse(jwt));
     }
 
     @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER", "ROLE_BARTENDER"})
     @GetMapping("/profile")
-    public ResponseEntity<?> getUserProfile(@CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<User> getUserProfile(@CurrentUser UserPrincipal userPrincipal) {
         User user = userService.getUserByUsername(userPrincipal.getUsername());
         return ResponseEntity.ok(user);
     }
