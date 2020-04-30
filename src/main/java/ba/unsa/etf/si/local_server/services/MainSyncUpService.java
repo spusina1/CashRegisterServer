@@ -151,6 +151,7 @@ public class MainSyncUpService {
     }
 
     private List<Table> fetchTablesFromMain() {
+
         String uri = String.format("/offices/%d/tables", officeID);
         String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToTable);
@@ -159,7 +160,6 @@ public class MainSyncUpService {
     private Table mapJsonToTable(JsonNode jsonNode) {
         Long id = jsonNode.get("id").asLong();
         int tableNUmber = jsonNode.get("tableNumber").asInt();
-
         return new Table(id, tableNUmber);
     }
 
