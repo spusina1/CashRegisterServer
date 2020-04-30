@@ -1,5 +1,6 @@
 package ba.unsa.etf.si.local_server.services;
 
+import ba.unsa.etf.si.local_server.models.CashRegister;
 import ba.unsa.etf.si.local_server.models.Notification;
 import ba.unsa.etf.si.local_server.models.Table;
 import ba.unsa.etf.si.local_server.repositories.NotificationRepository;
@@ -19,5 +20,12 @@ public class TableService {
     public List<Table> getTables() {
         return new ArrayList<>(tableRepository
                 .findAll());
+    }
+
+    public void batchInsertTables(List<Table> tables) {
+        tables.forEach(table ->
+                tableRepository.saveTable(table.getId(), table.getTableNumber())
+        );
+        tableRepository.flush();
     }
 }
