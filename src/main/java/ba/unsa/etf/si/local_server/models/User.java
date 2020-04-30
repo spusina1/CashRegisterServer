@@ -59,4 +59,11 @@ public class User {
     @NotBlank
     private String phoneNumber;
 
+
+    private String resetToken = "";
+
+
+    private boolean otp;
+
+
 }
