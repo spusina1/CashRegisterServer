@@ -36,4 +36,6 @@ public class Product {
 
     private String description;
 
+    private Double pdv;
+
 }

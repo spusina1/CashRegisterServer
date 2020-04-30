@@ -109,8 +109,9 @@ public class MainSyncUpService {
         Integer discount = productNode.get("discount").get("percentage").asInt();
         String barcode = productNode.get("barcode").asText();
         String description = productNode.get("description").asText();
+        Double pdv = productNode.get("pdv").asDouble();
 
-        return new Product(id, name, quantity, price, discount, unit, image, barcode, description);
+        return new Product(id, name, quantity, price, discount, unit, image, barcode, description, pdv);
     }
 
     private User mapJsonToUser(JsonNode jsonNode) {
