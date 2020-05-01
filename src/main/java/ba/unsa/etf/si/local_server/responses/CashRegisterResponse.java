@@ -14,4 +14,8 @@ public class CashRegisterResponse {
     private Long businessId;
     private String businessName;
     private String uuid;
+    private String startTime;
+    private String endTime;
+    private String language;
+    private boolean restaurant;
 }
