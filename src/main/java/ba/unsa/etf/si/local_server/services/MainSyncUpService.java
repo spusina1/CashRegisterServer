@@ -91,7 +91,6 @@ public class MainSyncUpService {
             throw new AppException("Expected json response");
         }
         List<CashRegister> cashRegisters = jsonListToObjectList(jsonArray, this::mapJsonToCashRegister);
-        System.out.println(cashRegisters);
         business.setCashRegisters(cashRegisters);
 
 
