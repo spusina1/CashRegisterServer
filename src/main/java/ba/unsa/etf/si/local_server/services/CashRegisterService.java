@@ -1,7 +1,9 @@
 package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
+import ba.unsa.etf.si.local_server.models.Business;
 import ba.unsa.etf.si.local_server.models.CashRegister;
+import ba.unsa.etf.si.local_server.repositories.BusinessRepository;
 import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
 import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.List;
 @Service
 public class CashRegisterService {
     private final CashRegisterRepository cashRegisterRepository;
+    private final BusinessRepository businessRepository;
 
     @Value("${main_server.office_id}")
     private long officeID;
@@ -31,8 +34,9 @@ public class CashRegisterService {
 
         cashRegister.setTaken(true);
         cashRegisterRepository.save(cashRegister);
+        Business business = businessRepository.findAll().get(0);
 
-        return makeCashRegisterResponse(cashRegister);
+        return makeCashRegisterResponse(cashRegister, business);
     }
 
     public void batchInsertCashRegisters(List<CashRegister> cashRegisters) {
@@ -79,18 +83,22 @@ public class CashRegisterService {
         CashRegister cashRegister = cashRegisterRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No available cash registers!"));
-
-        return makeCashRegisterResponse(cashRegister);
+        Business business = businessRepository.findAll().get(0);
+        return makeCashRegisterResponse(cashRegister, business);
     }
 
-    private CashRegisterResponse makeCashRegisterResponse(CashRegister cashRegister) {
+    private CashRegisterResponse makeCashRegisterResponse(CashRegister cashRegister, Business business) {
         return new CashRegisterResponse(
                 cashRegister.getId(),
                 cashRegister.getName(),
                 officeID,
                 businessID,
-                businessName,
-                cashRegister.getUuid());
+                business.getBusinessName(),
+                cashRegister.getUuid(),
+                business.getStartTime(),
+                business.getEndTime(),
+                business.getLanguage(),
+                business.isRestaurant());
     }
 
 }

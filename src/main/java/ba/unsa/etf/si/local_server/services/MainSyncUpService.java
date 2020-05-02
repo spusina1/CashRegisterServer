@@ -1,6 +1,7 @@
 package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.exceptions.AppException;
+import ba.unsa.etf.si.local_server.models.Business;
 import ba.unsa.etf.si.local_server.models.CashRegister;
 import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.Table;
@@ -26,6 +27,7 @@ public class MainSyncUpService {
     private final UserService userService;
     private final ProductService productService;
     private final CashRegisterService cashRegisterService;
+    private final BusinessService businessService;
     private final TableService tableService;
 
     @Value("${main_server.office_id}")
@@ -34,21 +36,19 @@ public class MainSyncUpService {
     @Value("${main_server.business_id}")
     private long businessID;
 
-    private boolean restaurant;
-
     @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
 
         List<User> users = fetchUsersFromMain();
         List<Product> products = fetchProductsFromMain();
-        List<CashRegister> cashRegisters = fetchCashRegistersFromMain();
         List<Table> tables = fetchTablesFromMain();
-
+        Business business = fetchBusinessFromMain();
+        
         userService.batchInsertUsers(users);
         productService.batchInsertProducts(products);
-        cashRegisterService.batchInsertCashRegisters(cashRegisters);
         tableService.batchInsertTables(tables);
+        businessService.updateBussinesInfo(business);
 
         System.out.println("Yaaay, Synchronisation complete!");
     }
@@ -65,10 +65,12 @@ public class MainSyncUpService {
         return jsonListToObjectList(json, this::mapJsonToUser);
     }
 
-    private List<CashRegister> fetchCashRegistersFromMain() {
+    private Business fetchBusinessFromMain() {
         String uri = String.format("/business/%d/office-details/%d", businessID, officeID);
         String json = httpClientService.makeGetRequest(uri);
         ObjectMapper objectMapper = new ObjectMapper();
+
+        Business business = new Business();
 
         String jsonArray;
 
@@ -77,14 +79,26 @@ public class MainSyncUpService {
             jsonArray = jsonNode.get("cashRegisters").toString();
 
             String businessName = jsonNode.get("businessName").asText();
-            restaurant = jsonNode.get("restaurant").asBoolean();
+            boolean restaurant = jsonNode.get("restaurant").asBoolean();
+            String language = jsonNode.get("language").asText();
+            String startTime = jsonNode.get("startTime").asText();
+            String endTime = jsonNode.get("endTime").asText();
+            String syncTime = jsonNode.get("syncTime").asText();
+            business.setBusinessName(businessName);
+            business.setRestaurant(restaurant);
+            business.setLanguage(language);
+            business.setStartTime(startTime);
+            business.setEndTime(endTime);
+            business.setSyncTime(syncTime);
 
             cashRegisterService.updateBusinessName(businessName);
         } catch (JsonProcessingException e) {
             throw new AppException("Expected json response");
         }
+        List<CashRegister> cashRegisters = jsonListToObjectList(jsonArray, this::mapJsonToCashRegister);
+        business.setCashRegisters(cashRegisters);
 
-        return jsonListToObjectList(jsonArray, this::mapJsonToCashRegister);
+        return business;
     }
 
     private <T> ArrayList<T> jsonListToObjectList(String json, Function<JsonNode, T> mapJsonNodeToObject) {
