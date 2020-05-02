@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
 @Entity
@@ -13,12 +15,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Table(name = "notifications")
 public class Notification {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-
     private String message;
-
 }

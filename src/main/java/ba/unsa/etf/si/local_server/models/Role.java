@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import javax.persistence.Table;
 
 @Data
 @AllArgsConstructor

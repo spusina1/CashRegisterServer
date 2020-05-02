@@ -13,20 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class CashRegisterController {
     private final CashRegisterService cashRegisterService;
 
-    @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
-    @PostMapping("/api/cash-register/open")
-    public ResponseEntity<Response> openRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
-        String responseMessage = cashRegisterService.openRegister(id);
-        return ResponseEntity.ok(new Response(responseMessage));
-    }
-
-    @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
-    @PostMapping("/api/cash-register/close")
-    public ResponseEntity<Response> closeRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
-        String responseMessage = cashRegisterService.closeRegister(id);
-        return ResponseEntity.ok(new Response(responseMessage));
-    }
-
     @Secured("ROLE_OFFICEMAN")
     @PostMapping("/api/cash-register/register")
     public ResponseEntity<CashRegisterResponse> obtainIds() {

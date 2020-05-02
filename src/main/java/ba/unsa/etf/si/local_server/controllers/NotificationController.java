@@ -17,7 +17,7 @@ import java.util.List;
 public class NotificationController {
     private final NotificationService notificationService;
 
-    @Secured({"ROLE_CASHIER", "ROLE_BARTENDER", "ROLE_GUEST"})
+    @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER", "ROLE_BARTENDER", "ROLE_GUEST"})
     @PostMapping("/api/notifications")
     public ResponseEntity<Response> saveNotification(@Valid @RequestBody SendNotificationRequest notificationRequest){
         String responseMessage = notificationService.saveNotification(notificationRequest);

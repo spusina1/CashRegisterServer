@@ -6,6 +6,7 @@ import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
 import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,29 +46,29 @@ public class CashRegisterService {
         this.businessName = businessName;
     }
 
-    public String openRegister(Long id){
-        CashRegister cashRegister = cashRegisterRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
+//    @Scheduled(cron = "${cron.open}")
+    public void openRegisters() {
+        System.out.println("Opening cash registers...");
+        List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
 
-        cashRegister.setOpen(true);
-        cashRegisterRepository.save(cashRegister);
-
-        return "Cash register " + id + " opened!";
+        for(CashRegister cashRegister:cashRegisters) {
+            cashRegister.setOpen(true);
+            cashRegisterRepository.save(cashRegister);
+        }
     }
 
-    public String closeRegister(Long id){
-        CashRegister cashRegister = cashRegisterRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
+//    @Scheduled(cron = "${cron.close}")
+    public void closeRegisters() {
+        System.out.println("Closing cash registers...");
+        List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
 
-        cashRegister.setOpen(false);
-        cashRegisterRepository.save(cashRegister);
-
-        return "Cash register " + id + " closed!";
+        for(CashRegister cashRegister:cashRegisters) {
+            cashRegister.setOpen(false);
+            cashRegisterRepository.save(cashRegister);
+        }
     }
 
-    public boolean isCashRegisterOpen(Long id){
+    public boolean isCashRegisterOpen(Long id) {
         CashRegister cashRegister = cashRegisterRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));

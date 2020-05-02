@@ -206,4 +206,74 @@ Cash Register treba biti u mogućnosti pristupiti svim informacijama o sebi neop
 * Uraditi push koda
 * Napraviti pull request
 
+# Feature
+Promjena šifre
+## Item
+Seller mobilna App i Cash Register trebaju moći saznati kada je korisnikova šifra promijenjena od strane administratora i u tom slučaju po loginu treba ga odmah preusmjeriti na promjenu vlastite šifre radi sigurnosti.
+### Task
+* Proširiti model User sa informacijom o privremenoj šifri i reset tokenu
+* Napraviti rutu na koju se šalje zahtjev s mailom-korisnika
+* Implementirati provjeru maila i slanje reset tokena na mail
+* Kreirati html formu maila
+* Implementirati rutu na koju se šalje sigurnosni token kako bi se provjerila njegova ispravnost
+* Implementirati metode za provjeru tokena
+* Implementirati rutu za spremanje novog passworda
+* Implementirati metode za promjenu passworda i pohranu u bazu
+* Poslati nove informacije o Useru Main serveru
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Asinhrono primanje poruka
+## Item
+Korisnik Cash Register aplikacije i Seller mobilne aplikacije treba imati mogućnost asinhronog primanja poruka koje je poslao Guest user. 
+### Task
+
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Pregled računa s uključenim PDV-om
+## Item
+ Korisnik Cash Register App treba imati mogućnost pregleda računa uz informaciju o PDV-u proizvoda. 
+### Task
+* Proširiti model proizvoda sa informacijom o PDV-u
+* Uz dobavljanje podataka o proizvodu s Main servera pokupiti i podatak o PDV-u
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Grafički prikaz stolova
+## Item
+Korisnik Seller App i Cash Register App treba imati mogućnost uvida u prostorni razmještaj stolova/stolica/… u restoranu/ordinaciji/…
+### Task
+* Kreirati Table model
+* Kreirati Table controller
+* Kreirati Tebale service
+* Kreirati Table repository
+* Implementirati metodu za dobavljanje informacija o broju stolova za poslovnicu od Main servera
+* Implementirati rutu za dobavljanja informacija o stolovima
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Filtriranje proizvoda 
+## Item
+Korisnik Seller App treba imati mogućnost filtriranja svih proizvoda po sastojcima.
+### Task
+* Implementirati metodu za dobvljanje svih proizvoda iz baze
+* Uraditi push koda
+* Napraviti pull request
+
+# Feature
+Konfiguracijske postavke aplikacija
+## Item
+Seller Mobilna App i Cash Register trebaju imati mogućnost dobavljanja informacija o konfiguracijskim postavkama (jezik, vrijeme).
+### Task
+* Dobaviti informacije o konfiguracijama od Main servera
+* Implementirati rutu preko koje Cash Register server dobavlja informacije o konfiguracijama koje su mu potrebne
+* Implementirati rutu preko koje Seller App dobavlja informacije o konfiguracijama koje su joj potrebne
+* Uraditi push koda
+* Napraviti pull request
+
 
