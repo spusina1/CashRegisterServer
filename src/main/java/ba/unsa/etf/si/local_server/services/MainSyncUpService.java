@@ -30,6 +30,8 @@ public class MainSyncUpService {
     private final BusinessService businessService;
     private final TableService tableService;
 
+    boolean restaurant;
+
     @Value("${main_server.office_id}")
     private long officeID;
 
@@ -42,13 +44,13 @@ public class MainSyncUpService {
 
         List<User> users = fetchUsersFromMain();
         List<Product> products = fetchProductsFromMain();
-        List<Table> tables = fetchTablesFromMain();
         Business business = fetchBusinessFromMain();
+        List<Table> tables = fetchTablesFromMain();
         
         userService.batchInsertUsers(users);
         productService.batchInsertProducts(products);
-        tableService.batchInsertTables(tables);
         businessService.updateBussinesInfo(business);
+        tableService.batchInsertTables(tables);
 
         System.out.println("Yaaay, Synchronisation complete!");
     }
@@ -79,7 +81,7 @@ public class MainSyncUpService {
             jsonArray = jsonNode.get("cashRegisters").toString();
 
             String businessName = jsonNode.get("businessName").asText();
-            boolean restaurant = jsonNode.get("restaurant").asBoolean();
+            restaurant = jsonNode.get("restaurant").asBoolean();
             String language = jsonNode.get("language").asText();
             String startTime = jsonNode.get("startTime").asText();
             String endTime = jsonNode.get("endTime").asText();
@@ -174,7 +176,7 @@ public class MainSyncUpService {
     }
 
     private List<Table> fetchTablesFromMain() {
-//        if(!restaurant) return null;
+        if(!restaurant) return jsonListToObjectList("[]", this::mapJsonToTable);
         String uri = String.format("/offices/%d/tables", officeID);
         String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToTable);
