@@ -135,6 +135,7 @@ public class MainSyncUpService {
             String city = profile.get("city").asText();
             String country = profile.get("country").asText();
             String phoneNumber = profile.get("phoneNumber").asText();
+            String email = profile.get("email").asText();
 
             user.setPassword(jsonNode.get("password").asText());
             user.setName(name);
@@ -143,6 +144,7 @@ public class MainSyncUpService {
             user.setCity(city);
             user.setCountry(country);
             user.setPhoneNumber(phoneNumber);
+            user.setEmail(email);
 
             return user;
         } catch (JsonProcessingException e) {
