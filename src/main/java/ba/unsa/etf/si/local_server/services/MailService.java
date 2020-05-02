@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -41,15 +42,20 @@ public class MailService {
     @Autowired
     private Configuration freemarkerConfig;
 
+    @Value("${spring.mail.username}")
+    private String cashRegisterServerMail;
+
+    @Value("${spring.mail.password}")
+    private String cashRegisterServerPassword;
+
+
     public void sendmail(String email, String name, String resetToken) throws MessagingException, IOException, TemplateException {
-
-
         mailSender = new JavaMailSenderImpl();
 
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
-        mailSender.setUsername("CashRegisterServer@gmail.com");
-        mailSender.setPassword("cashregisterserver123");
+        mailSender.setUsername(cashRegisterServerMail);
+        mailSender.setPassword(cashRegisterServerPassword);
 
         Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.smtp.starttls.enable", "true");
@@ -58,7 +64,6 @@ public class MailService {
         javaMailProperties.put("mail.debug", "true");
 
         mailSender.setJavaMailProperties(javaMailProperties);
-
 
         MimeMessage message=mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());

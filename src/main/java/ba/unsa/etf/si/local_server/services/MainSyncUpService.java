@@ -174,7 +174,7 @@ public class MainSyncUpService {
     }
 
     private List<Table> fetchTablesFromMain() {
-        if(!restaurant) return null;
+//        if(!restaurant) return null;
         String uri = String.format("/offices/%d/tables", officeID);
         String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToTable);

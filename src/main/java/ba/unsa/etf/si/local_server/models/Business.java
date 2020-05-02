@@ -6,13 +6,12 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "business")
+@javax.persistence.Table(name = "business")
 public class Business {
 
     @Id
