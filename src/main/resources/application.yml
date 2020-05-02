@@ -13,6 +13,21 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    test-connection: false
+
 app:
   jwtSecret: ${JWT_SECRET}
   jwtExpirationInMs: 604800000
@@ -26,3 +41,5 @@ main_server:
   poll_attempts: ${POLL_ATTEMPTS:10}
 cron:
   main_fetch: ${MAIN_SYNC_CRON_TIME}
+  open: ${CASH_REGISTER_OPENING_CRON_TIME}
+  close: ${CASH_REGISTER_CLOSING_CRON_TIME}

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,5 +59,12 @@ public class User {
 
     @NotBlank
     private String phoneNumber;
+
+
+    private String resetToken = "";
+
+
+    private boolean otp;
+
 
 }

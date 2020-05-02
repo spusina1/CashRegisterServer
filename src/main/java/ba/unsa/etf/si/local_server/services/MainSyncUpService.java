@@ -4,6 +4,7 @@ import ba.unsa.etf.si.local_server.exceptions.AppException;
 import ba.unsa.etf.si.local_server.models.Business;
 import ba.unsa.etf.si.local_server.models.CashRegister;
 import ba.unsa.etf.si.local_server.models.Product;
+import ba.unsa.etf.si.local_server.models.Table;
 import ba.unsa.etf.si.local_server.models.User;
 import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
 import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
@@ -27,6 +28,7 @@ public class MainSyncUpService {
     private final ProductService productService;
     private final CashRegisterService cashRegisterService;
     private final BusinessService businessService;
+    private final TableService tableService;
 
     @Value("${main_server.office_id}")
     private long officeID;
@@ -37,14 +39,17 @@ public class MainSyncUpService {
     @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
+
         List<User> users = fetchUsersFromMain();
         List<Product> products = fetchProductsFromMain();
-
+        List<Table> tables = fetchTablesFromMain();
         Business business = fetchBusinessFromMain();
-
+        
         userService.batchInsertUsers(users);
         productService.batchInsertProducts(products);
+        tableService.batchInsertTables(tables);
         businessService.updateBussinesInfo(business);
+
         System.out.println("Yaaay, Synchronisation complete!");
     }
 
@@ -93,7 +98,6 @@ public class MainSyncUpService {
         List<CashRegister> cashRegisters = jsonListToObjectList(jsonArray, this::mapJsonToCashRegister);
         business.setCashRegisters(cashRegisters);
 
-
         return business;
     }
 
@@ -129,8 +133,9 @@ public class MainSyncUpService {
         Integer discount = productNode.get("discount").get("percentage").asInt();
         String barcode = productNode.get("barcode").asText();
         String description = productNode.get("description").asText();
+        Double pdv = productNode.get("pdv").asDouble();
 
-        return new Product(id, name, quantity, price, discount, unit, image, barcode, description);
+        return new Product(id, name, quantity, price, discount, unit, image, barcode, description, pdv);
     }
 
     private User mapJsonToUser(JsonNode jsonNode) {
@@ -144,6 +149,7 @@ public class MainSyncUpService {
             String city = profile.get("city").asText();
             String country = profile.get("country").asText();
             String phoneNumber = profile.get("phoneNumber").asText();
+            String email = profile.get("email").asText();
 
             user.setPassword(jsonNode.get("password").asText());
             user.setName(name);
@@ -152,6 +158,7 @@ public class MainSyncUpService {
             user.setCity(city);
             user.setCountry(country);
             user.setPhoneNumber(phoneNumber);
+            user.setEmail(email);
 
             return user;
         } catch (JsonProcessingException e) {
@@ -164,6 +171,19 @@ public class MainSyncUpService {
         Long id = jsonNode.get("id").asLong();
         String uuid = jsonNode.get("uuid").asText();
         return new CashRegister(id, name, uuid, false, false);
+    }
+
+    private List<Table> fetchTablesFromMain() {
+        if(!restaurant) return null;
+        String uri = String.format("/offices/%d/tables", officeID);
+        String json = httpClientService.makeGetRequest(uri);
+        return jsonListToObjectList(json, this::mapJsonToTable);
+    }
+
+    private Table mapJsonToTable(JsonNode jsonNode) {
+        Long id = jsonNode.get("id").asLong();
+        int tableNUmber = jsonNode.get("tableNumber").asInt();
+        return new Table(id, tableNUmber);
     }
 
 }
