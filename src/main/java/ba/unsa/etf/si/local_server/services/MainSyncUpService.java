@@ -41,13 +41,12 @@ public class MainSyncUpService {
         System.out.println("Synchronizing databases...");
 
         List<User> users = fetchUsersFromMain();
-        //ne mogu ovo da popravim
-        //List<Product> products = fetchProductsFromMain();
+        List<Product> products = fetchProductsFromMain();
         List<CashRegister> cashRegisters = fetchCashRegistersFromMain();
         List<Table> tables = fetchTablesFromMain();
 
         userService.batchInsertUsers(users);
-        //productService.batchInsertProducts(products);
+        productService.batchInsertProducts(products);
         cashRegisterService.batchInsertCashRegisters(cashRegisters);
         tableService.batchInsertTables(tables);
 
