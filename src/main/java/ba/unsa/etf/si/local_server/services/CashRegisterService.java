@@ -6,9 +6,11 @@ import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
 import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -45,26 +47,32 @@ public class CashRegisterService {
         this.businessName = businessName;
     }
 
-    public String openRegister(Long id){
-        CashRegister cashRegister = cashRegisterRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
+    @Scheduled(cron = "${cron.open}")
+    public String openRegisters(){
+        System.out.println("Opening cash registers...");
 
-        cashRegister.setOpen(true);
-        cashRegisterRepository.save(cashRegister);
+        List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
 
-        return "Cash register " + id + " opened!";
+        for(CashRegister cashRegister:cashRegisters){
+            cashRegister.setOpen(true);
+            cashRegisterRepository.save(cashRegister);
+        }
+
+        return "Cash registers opened!";
     }
 
-    public String closeRegister(Long id){
-        CashRegister cashRegister = cashRegisterRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
+    @Scheduled(cron = "${cron.close}")
+    public String closeRegisters(){
+        System.out.println("Closing cash registers...");
 
-        cashRegister.setOpen(false);
-        cashRegisterRepository.save(cashRegister);
+        List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
 
-        return "Cash register " + id + " closed!";
+        for(CashRegister cashRegister:cashRegisters){
+            cashRegister.setOpen(false);
+            cashRegisterRepository.save(cashRegister);
+        }
+
+        return "Cash registers closed!";
     }
 
     public boolean isCashRegisterOpen(Long id){

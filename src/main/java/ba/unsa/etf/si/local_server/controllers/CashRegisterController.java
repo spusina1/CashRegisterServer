@@ -15,15 +15,15 @@ public class CashRegisterController {
 
     @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
     @PostMapping("/api/cash-register/open")
-    public ResponseEntity<Response> openRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
-        String responseMessage = cashRegisterService.openRegister(id);
+    public ResponseEntity<Response> openRegisters(){
+        String responseMessage = cashRegisterService.openRegisters();
         return ResponseEntity.ok(new Response(responseMessage));
     }
 
     @Secured({"ROLE_OFFICEMAN", "ROLE_CASHIER"})
     @PostMapping("/api/cash-register/close")
-    public ResponseEntity<Response> closeRegister(@RequestParam(required = false, name = "cash_register_id") Long id){
-        String responseMessage = cashRegisterService.closeRegister(id);
+    public ResponseEntity<Response> closeRegisters(){
+        String responseMessage = cashRegisterService.closeRegisters();
         return ResponseEntity.ok(new Response(responseMessage));
     }
 
