@@ -7,7 +7,9 @@ import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import ba.unsa.etf.si.local_server.requests.SendNotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,12 +18,14 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationService {
     private final NotificationRepository notificationRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     public String saveNotification(SendNotificationRequest notificationRequest) {
         if(notificationRequest != null){
             Notification newNotification = new Notification();
             newNotification.setMessage(notificationRequest.getMessage());
-            notificationRepository.save(newNotification);
+            Notification saved = notificationRepository.save(newNotification);
+            simpMessagingTemplate.convertAndSend("/topic/notifications", saved);
             return "Notification is successfully saved!";
         }
         return "";
