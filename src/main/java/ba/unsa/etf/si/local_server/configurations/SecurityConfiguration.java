@@ -31,6 +31,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final String[] unprotectedRoutes = {
+            "/api/reset-token",
+            "/api/verification-info",
+            "/api/password",
             "/api/login",
             "/swagger-resources/**",
             "/swagger-ui.html**",

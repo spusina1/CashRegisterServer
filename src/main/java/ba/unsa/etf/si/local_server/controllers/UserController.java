@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/reset-token")
+    @PostMapping("/reset-token")
     public ResponseEntity<Response> getResetToken(@Valid @RequestBody GetResetTokenRequest getResetTokenRequest) throws MessagingException, IOException, TemplateException {
         String message = userService.generateResetToken(getResetTokenRequest);
         return ResponseEntity.ok(new Response(message));
