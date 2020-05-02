@@ -34,6 +34,11 @@ public class HttpClientService {
         return response.getBody();
     }
 
+    public String makePutRequest(String relativeURI, String json) {
+        ResponseEntity<String> response = makeRequest(relativeURI, HttpMethod.PUT, json);
+        return response.getBody();
+    }
+
     public ResponseEntity<String> makeRequest(String relativeURI, HttpMethod httpMethod, String json) {
         String uri = baseURI + relativeURI;
         MainLoginRequest mainLoginRequest = new MainLoginRequest(username, password);
