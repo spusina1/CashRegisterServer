@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -47,35 +46,29 @@ public class CashRegisterService {
         this.businessName = businessName;
     }
 
-    @Scheduled(cron = "${cron.open}")
-    public String openRegisters(){
+//    @Scheduled(cron = "${cron.open}")
+    public void openRegisters() {
         System.out.println("Opening cash registers...");
-
         List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
 
-        for(CashRegister cashRegister:cashRegisters){
+        for(CashRegister cashRegister:cashRegisters) {
             cashRegister.setOpen(true);
             cashRegisterRepository.save(cashRegister);
         }
-
-        return "Cash registers opened!";
     }
 
-    @Scheduled(cron = "${cron.close}")
-    public String closeRegisters(){
+//    @Scheduled(cron = "${cron.close}")
+    public void closeRegisters() {
         System.out.println("Closing cash registers...");
-
         List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
 
-        for(CashRegister cashRegister:cashRegisters){
+        for(CashRegister cashRegister:cashRegisters) {
             cashRegister.setOpen(false);
             cashRegisterRepository.save(cashRegister);
         }
-
-        return "Cash registers closed!";
     }
 
-    public boolean isCashRegisterOpen(Long id){
+    public boolean isCashRegisterOpen(Long id) {
         CashRegister cashRegister = cashRegisterRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No cash registers with id " + id +"!"));
