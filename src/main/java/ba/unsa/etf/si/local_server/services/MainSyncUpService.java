@@ -3,6 +3,7 @@ package ba.unsa.etf.si.local_server.services;
 import ba.unsa.etf.si.local_server.exceptions.AppException;
 import ba.unsa.etf.si.local_server.models.CashRegister;
 import ba.unsa.etf.si.local_server.models.Product;
+import ba.unsa.etf.si.local_server.models.Table;
 import ba.unsa.etf.si.local_server.models.User;
 import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
 import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
@@ -25,6 +26,7 @@ public class MainSyncUpService {
     private final UserService userService;
     private final ProductService productService;
     private final CashRegisterService cashRegisterService;
+    private final TableService tableService;
 
     @Value("${main_server.office_id}")
     private long officeID;
@@ -32,16 +34,23 @@ public class MainSyncUpService {
     @Value("${main_server.business_id}")
     private long businessID;
 
+    private boolean restaurant;
+
     @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
+
         List<User> users = fetchUsersFromMain();
-        List<Product> products = fetchProductsFromMain();
+        //ne mogu ovo da popravim
+        //List<Product> products = fetchProductsFromMain();
         List<CashRegister> cashRegisters = fetchCashRegistersFromMain();
+        List<Table> tables = fetchTablesFromMain();
 
         userService.batchInsertUsers(users);
-        productService.batchInsertProducts(products);
+        //productService.batchInsertProducts(products);
         cashRegisterService.batchInsertCashRegisters(cashRegisters);
+        tableService.batchInsertTables(tables);
+
         System.out.println("Yaaay, Synchronisation complete!");
     }
 
@@ -69,6 +78,8 @@ public class MainSyncUpService {
             jsonArray = jsonNode.get("cashRegisters").toString();
 
             String businessName = jsonNode.get("businessName").asText();
+            restaurant = jsonNode.get("restaurant").asBoolean();
+
             cashRegisterService.updateBusinessName(businessName);
         } catch (JsonProcessingException e) {
             throw new AppException("Expected json response");
@@ -145,6 +156,19 @@ public class MainSyncUpService {
         Long id = jsonNode.get("id").asLong();
         String uuid = jsonNode.get("uuid").asText();
         return new CashRegister(id, name, uuid, false, false);
+    }
+
+    private List<Table> fetchTablesFromMain() {
+        if(!restaurant) return null;
+        String uri = String.format("/offices/%d/tables", officeID);
+        String json = httpClientService.makeGetRequest(uri);
+        return jsonListToObjectList(json, this::mapJsonToTable);
+    }
+
+    private Table mapJsonToTable(JsonNode jsonNode) {
+        Long id = jsonNode.get("id").asLong();
+        int tableNUmber = jsonNode.get("tableNumber").asInt();
+        return new Table(id, tableNUmber);
     }
 
 }
