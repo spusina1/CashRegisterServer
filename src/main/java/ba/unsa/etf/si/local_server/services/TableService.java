@@ -19,6 +19,9 @@ public class TableService {
     }
 
     public void batchInsertTables(List<Table> tables) {
+        tableRepository.deleteAllInBatch();
+        tableRepository.flush();
+
         tables.forEach(table ->
                 tableRepository.saveTable(table.getId(), table.getTableNumber())
         );
