@@ -229,6 +229,10 @@ Asinhrono primanje poruka
 Korisnik Cash Register aplikacije i Seller mobilne aplikacije treba imati mogućnost asinhronog primanja poruka koje je poslao Guest user. 
 ### Task
 
+* Kreirati konfiguracijsku klasu za WebSocket podršku
+* Dodati endpoint za websocket konekcije
+* Dodati topic na koji se klijenti trebaju subscribe da osluškuju notifikacije
+* Proširiti metodu za slanje notifikacija emitiranjem poruka koje su poslane
 * Uraditi push koda
 * Napraviti pull request
 
