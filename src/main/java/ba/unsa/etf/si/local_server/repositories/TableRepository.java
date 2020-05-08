@@ -13,7 +13,7 @@ public interface TableRepository extends JpaRepository<Table, Long> {
     @Transactional
     @Query(
             nativeQuery = true,
-            value = "insert into tables(id, table_number) values (?1, ?2)"
+            value = "insert into tables(id, table_name) values (?1, ?2)"
     )
-    int saveTable(Long id, int table_number);
+    int saveTable(Long id, String table_name);
 }
