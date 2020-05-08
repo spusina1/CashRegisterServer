@@ -13,5 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SellerAppRequest {
     private String message;
+    private boolean served;
+    private boolean seen;
     private List<ReceiptItemRequest> receiptItems;
 }

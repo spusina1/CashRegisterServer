@@ -10,5 +10,8 @@ import java.util.Set;
 public class GuestOrderResponse {
     private Long id;
     private String message;
+    private boolean served;
+    private boolean seen;
     private Set<SellerAppReceiptItemsResponse> receiptItems;
+
 }

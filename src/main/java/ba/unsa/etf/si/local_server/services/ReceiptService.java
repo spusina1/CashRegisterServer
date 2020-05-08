@@ -197,7 +197,9 @@ public class ReceiptService {
                 receipt.getUsername(),
                 reversedTotalPrice,
                 new Date().getTime(),
-                null
+                null,
+                receipt.isServed(),
+                receipt.isSeen()
         );
     }
 
@@ -234,6 +236,8 @@ public class ReceiptService {
             }
 
             newReceipt.setCashRegisterId(-1L);
+            newReceipt.setServed(receiptItems.isServed());
+            newReceipt.setSeen(receiptItems.isSeen());
 
             Set<ReceiptItem> items = receiptItems
                     .getReceiptItems()
@@ -276,6 +280,8 @@ public class ReceiptService {
                         .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
                         .collect(Collectors.toSet());
                 order.get().setReceiptItems(items);
+                order.get().setServed(editOrderRequest.isServed());
+                order.get().setSeen(editOrderRequest.isSeen());
                 receiptItemRepository.saveAll(items);
                 return "Order is successfully changed!";
             }
@@ -305,7 +311,7 @@ public class ReceiptService {
 
         return receipts
                 .stream()
-                .map(r -> new GuestOrderResponse(r.getId(), r.getMessage(), r.getReceiptItems()
+                .map(r -> new GuestOrderResponse(r.getId(), r.getMessage(), r.isServed(), r.isSeen(), r.getReceiptItems()
                         .stream()
                         .map(receiptItem -> new SellerAppReceiptItemsResponse(receiptItem.getProductId(), receiptItem.getQuantity()))
                         .collect(Collectors.toSet())))
