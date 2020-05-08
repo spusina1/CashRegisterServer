@@ -42,6 +42,7 @@ public class BusinessService {
         sellerAppInfoResponse.setRestaurant(business.isRestaurant());
         sellerAppInfoResponse.setBusinessId(businessId);
         sellerAppInfoResponse.setOfficeId(officeId);
+        sellerAppInfoResponse.setPlaceName(business.getPlaceName());
         return sellerAppInfoResponse;
     }
 }

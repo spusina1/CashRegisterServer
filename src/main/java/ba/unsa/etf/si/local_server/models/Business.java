@@ -24,6 +24,7 @@ public class Business {
     private String startTime;
     private String endTime;
     private String syncTime;
+    private String placeName;
 
     @OneToMany(cascade =  CascadeType.ALL)
     @JoinColumn(name = "bussines_id")

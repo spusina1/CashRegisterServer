@@ -18,4 +18,5 @@ public class CashRegisterResponse {
     private String endTime;
     private String language;
     private boolean restaurant;
+    private String placeName;
 }
