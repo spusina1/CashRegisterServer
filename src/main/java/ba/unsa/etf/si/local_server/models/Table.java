@@ -15,5 +15,5 @@ import javax.persistence.Id;
 public class Table {
     @Id
     private Long id;
-    private int tableNumber;
+    private String tableName;
 }

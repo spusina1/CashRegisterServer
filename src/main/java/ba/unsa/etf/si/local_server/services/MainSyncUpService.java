@@ -186,7 +186,7 @@ public class MainSyncUpService {
 
     private Table mapJsonToTable(JsonNode jsonNode) {
         Long id = jsonNode.get("id").asLong();
-        int tableNUmber = jsonNode.get("tableNumber").asInt();
+        String tableNUmber = jsonNode.get("tableName").asText();
         return new Table(id, tableNUmber);
     }
 

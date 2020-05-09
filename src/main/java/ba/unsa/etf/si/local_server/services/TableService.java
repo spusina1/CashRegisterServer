@@ -23,7 +23,7 @@ public class TableService {
         tableRepository.flush();
 
         tables.forEach(table ->
-                tableRepository.saveTable(table.getId(), table.getTableNumber())
+                tableRepository.saveTable(table.getId(), table.getTableName())
         );
         tableRepository.flush();
     }
