@@ -9,5 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class EditOrderRequest {
     private Long id;
+    private boolean served;
+    private boolean seen;
     private List<ReceiptItemRequest> receiptItems;
 }

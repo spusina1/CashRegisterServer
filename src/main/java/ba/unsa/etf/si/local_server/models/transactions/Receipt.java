@@ -51,4 +51,8 @@ public class Receipt {
 
     private String message;
 
+    private boolean served;
+
+    private boolean seen;
+
 }
