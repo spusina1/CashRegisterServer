@@ -14,4 +14,5 @@ public class SellerAppInfoResponse {
     private String businessName;
     private String language;
     private boolean restaurant;
+    private  String placeName;
 }

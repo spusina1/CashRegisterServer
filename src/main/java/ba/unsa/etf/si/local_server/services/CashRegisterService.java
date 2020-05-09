@@ -98,7 +98,8 @@ public class CashRegisterService {
                 business.getStartTime(),
                 business.getEndTime(),
                 business.getLanguage(),
-                business.isRestaurant());
+                business.isRestaurant(),
+                business.getPlaceName());
     }
 
 }

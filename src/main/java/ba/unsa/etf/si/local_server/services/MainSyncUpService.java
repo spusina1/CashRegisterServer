@@ -86,12 +86,14 @@ public class MainSyncUpService {
             String startTime = jsonNode.get("startTime").asText();
             String endTime = jsonNode.get("endTime").asText();
             String syncTime = jsonNode.get("syncTime").asText();
+            String placeName = jsonNode.get("placeName").asText();
             business.setBusinessName(businessName);
             business.setRestaurant(restaurant);
             business.setLanguage(language);
             business.setStartTime(startTime);
             business.setEndTime(endTime);
             business.setSyncTime(syncTime);
+            business.setPlaceName(placeName);
 
             cashRegisterService.updateBusinessName(businessName);
         } catch (JsonProcessingException e) {
