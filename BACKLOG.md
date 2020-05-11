@@ -1,283 +1,279 @@
 # Feature
-Dobavljanje stanja za poslovnicu
+Fetching the supplies for the shop
 ## Item
-Korisnik Cash Register i Seller App treba moći pristupit svim neophodnim podacima koje Cash Register server dobiva od Main servera.
+The user of the Cash Register and Seller App should be able to access all the necessary data that the Cash Register server receives from the Main server.
 ### Task
-* Kreirati User model
-* Kreirati Product model
-* Kreirati Branch model
-* Kreirati CashRegister model
-* Kreirati Role model
-* Kreirati RoleName model
-* Implementirati metodu za dobavljanje podataka od Main servera
-* Uraditi push koda
-* Napraviti pull request
+* Create a User model
+* Create a Product model
+* Create a Branch model
+* Create a CashRegister model
+* Create a Role model
+* Create a RoleName model
+* Implement a method for retrieving data from the Main server
+* Push the code
+* Make a pull request
 
 # Feature
-Login korisnika
+User login
 ## Item
-Korisnik Cash Register desktop aplikacije i Seller mobilna aplikacije treba vršiti prijavu korisničkog računa preko Cash Register servera, koji sve pristupne podatke o uposlenicima poslovnice/a dobavlja od main servera, zbog provjere podataka prije odobravanja pristupa kako bi se osigurala sigurnost veze. 
-* Implementirati LoginRequest
-* Implementirati LoginResponse
-* Implementirati UserController
-* Implementirati UserService
-* Implementirati UserRepository
-* Sigurnost i konfiguracja
-* Uraditi push koda
-* Napraviti pull request
+The user of the Cash Register desktop application and the Seller mobile application should log in to it's account via the Cash Register server, which obtains all access data of the employees from the main server, in order to check the data before granting access to ensure connection security.
+* Implement LoginRequest
+* Implement LoginResponse
+* Implement UserController
+* Implement UserService
+* Implement UserRepository
+* Security and configuration
+* Push the code
+* Make a pull request
 
 # Feature
-Pregled podataka o svim proizvodima
+View information of all products
 ## Item
-Korisnik Cash Register i Seller App treba imati pregled informacija o svim proizvodima, preko Cash Register servera.
+The user of the Cash Register and Seller App should have an overview of information of all products via the Cash Register server.
 ### Task
-* Implementirati ProductController
-* Implementirati ProductService
-* Implementirati ProductRepository
-* Implementirati metode za vraćanje informacija o svim proizvodima iz baze
-* Uraditi push koda
-* Napraviti pull request
+* Implement ProductController
+* Implement ProductService
+* Implement ProductRepository
+* Implement methods for information retrieval about all products from the database
+* Push the code
+* Make a pull request
 
 # Feature
-Filtrirani pregled podataka o svim proizvodima
+Filtered information overview of all products
 ## Item
-Korisnik Cash Register desktop aplikacije i Seller mobilne aplikacije treba biti u mogućnosti filtrirati spisak svih artikala u poslovnici, o kojima informacije čuva Cash Register server, kako bi brže i jednostavnije dolazio do podataka o trenutno potrebnim artiklima. 
+The user of the Cash Register desktop application and the Seller mobile application should be able to filter the list of all items in the branch, about which information is stored by the Cash Register server, in order to quickly and easily access data on currently required items.
 ### Task
-* Implementirati FilterRequest klasu
-* Implementirati metodu unutar ProductService koja na osnovu filterRequest vraća listu proizvoda
-* Implementirati metodu Product Controllera koja vraća filtrirane proizvode 
-* Uraditi push koda
-* Napraviti pull request
+* Implement the FilterRequest class
+* Implement a method within ProductService that returns a list of products based on filterRequest
+* Implement a Product Controller method that returns filtered products
+* Do push code
+* Make a pull request
 
 # Feature
-Spašavanje narudžbi koje je kreirala Seller App
+Saving orders created by the Seller App
 ## Item
-Korisnik Seller mobilne aplikacije treba biti u mogućnosti spasiti narudžbu.
+The user of the Seller mobile application should be able to save the order.
 ### Task
-* Implementirati Receipt model
-* Implementirati Receipt service
-* Implementirati Receipt repository
-* Implementirati POST metodu za spremanje narudžbe
-* Implementirati spašavanje narudžbe u formi računa
-* Vratiti odgovor klijentu
-* Uraditi push koda
-* Napraviti pull request
+* Implement Receipt model
+* Implement Receipt service
+* Implement Receipt repository
+* Implement POST method to save order
+* Implement order save in the form of a receipt
+* Return the response to the client
+* Push the code
+* Make a pull request
 
 # Feature
-Pregled svih računa koje je kreirala Seller App
+View all receipts created by the Seller App
 ## Item
-Korisnik Cash Register aplikacije treba biti u mogućnosti pregledati sve račune koje je kreirala Seller App.
+The user of the Cash Register application should be able to view all receipts created by the Seller App.
 ### Task
-* Implementirati GET metodu za dobavljanje računa
-* Provjera da li je račun kreirala mobilna app
-* Implementirati dobavljanje računa
-* Vratiti odgovor klijentu
-* Uraditi push koda
-* Napraviti pull request
+* Implement a GET method for fetching receipts
+* Check if the receipt was created by the mobile app
+* Implement aquirement of the receipt
+* Return the response to the client
+* Push the code
+* Make a pull request
 
 # Feature
-Pregled svih računa
+View all receipts
 ## Item
-Korisnik Cash Register aplikacije treba biti u mogućnosti pregledati sve račune.
+The user of the Cash Register application should be able to view all receipts.
 ### Task
-* Implementirati GET metodu za dobavljanje računa
-* Implementirati dobavljanje računa
-* Vratiti odgovor klijentu
-* Uraditi push koda
-* Napraviti pull request
+* Implement a GET method for fetching receipts
+* Implement aquirement of the receipt
+* Return the response to the client
+* Push the code
+* Make a pull request
 
 # Feature
-Spašavanje računa 
+Receipt saving
 ## Item
-Korisnik Cash Register aplikacije treba biti u mogućnosti spasiti račun.
+The user of the Cash Register application should be able to save the receipt.
 ### Task
-* Implementirati POST metodu za spremanje računa
-* Provjera da li je račun kreirala mobilna app
-* Implementirati provjeru da li je račun već spašen
-* Implementirati spašavanje računa
-* Vratiti odgovor klijentu
-* Uraditi push koda
-* Napraviti pull request
+* Implement a POST method to save receipts
+* Check if the account was created by the mobile app
+* Implement a check to see if the receipt has already been saved
+* Implement receipt saving
+* Return the response to the client
+* Push the code
+* Make a pull request
 
 # Feature
-Brisanje računa
+Delete receipt
 ## Item
-Korisnik Cash Register aplikacije treba biti u mogućnosti obrisati račun koji neće biti plaćen.
+The user of the Cash Register application should be able to delete a receipt that will not be paid.
 ### Task
-* Implementirati DELETE metodu za brisanje računa
-* Provjera da li je račun već obrisan
-* Implementirati brisanje računa
-* Vratiti odgovor klijentu
-* Uraditi push koda
-* Napraviti pull request
+* Implement a DELETE method to delete receipts
+* Check if the receipt has already been deleted
+* Implement receipt deletion
+* Return the response to the client
+* Push the code
+* Make a pull request
 
 # Feature
-Plaćanje računa
+Receipt payment
 ## Item
-Korisnik treba biti u mogućnosti platiti račun pomoću PayApp.
+The user should be able to pay the receipt using PayApp.
 ### Task
-* Primanje računa od Cash Register App koji se treba platiti.
-* Provjera vrste plaćanja
-* Slanej računa Main serveru
-* Provjere odgovora od Main servera
-* Slanje odgovora aplikaciji da li je račun plaćen
-* Spašavanje računa
-* Uraditi push koda
-* Napraviti pull request
+* Receive the recepits from the Cash Register App that has to be pais.
+* Check payment method
+* Sending the receipt to the Main server
+* Response check from the Main server
+* Send a response to the application whether the receipt has been paid
+* Saving the receipt
+* Push the code
+* Make a pull request
 
 # Feature
-Pregled dnevnog izvjštaja o transakcijama.
+Daily transaction report view.
 ## Item
-Korisnik Cash Register App treba imati mogućnost pregledati sve račune koji su tog dana izdati kroz taj Cash Register.
+The Cash Register App user should be able to view all receipts issued that day through that Cash Register.
 ### Task
-* Kreirati end point
-* Implementirati metodu za vraćanje svih računa izdatih zadnja 24h
-* Uraditi push koda
-* Napraviti pull request
+* Create an end point
+* Implement a method for returning all receipts issued in the last 24 hours
+* Push the code
+* Make a pull request
 
 # Feature
-Spremanje notifikacija
+Saving notifications
 ## Item
-Guest korisnik Seller App treba imati mogućnost poslati poruku konobaru.
+The guest user of the Seller App should be able to send a message to the waiter.
 ### Task
-* Implementirati Notification model
-* Implementirati Notification controller
-* Implementirati Notification service
-* Implementirati Notification Repository
-* Kreirati end point
-* Implementirati metodu za spremanje svih poslatih poruka od strane Seller App.
-* Uraditi push koda
-* Napraviti pull request
-
+* Implement Notification model
+* Implement Notification controller
+* Implement Notification service
+* Implement Notification Repository
+* Create an end point
+* Implement a method to save all messages sent by the Seller App.
+* Push the code
+* Make a pull request
 
 # Feature
-Slanje notifikacija
+Sending notifications
 ## Item
-Seller App i Cash Register App trebaj imati mogućnost pregledati poruke od Guest usera.
+The Seller App and Cash Register App should be able to view messages from the Guest user.
 ### Task
-* Kreirati end point
-* Implementirati metodu za slanje svih poruka koje do tada nisu poslane nekoj od App koja te poruke treba primiti.
-* Uraditi push koda
-* Napraviti pull request
+* Create an end point
+* Implement a method for sending all messages that have not been sent to one of the Apps that should receive those messages.
+* Push the code
+* Make a pull request
 
 # Feature
-Uređivanje narudžbe 
+Order editing
 ## Item
-Seller App i Cash Register App trebaj imati mogućnost uređivati narudzbe koje nisu plaćene.
+The Seller App and Cash Register App should be able to edit orders that are not paid.
 ### Task
-* Kreirati end point
-* Implementirati metodu koja provjerava da li je račun plaćen, te ukoliko nije dozvoljava njegovo ažuriranje u bazi.
-* Uraditi push koda
-* Napraviti pull request
+* Create an end point
+* Implement a method that checks whether the receipt has been paid, and if not allows it to be updated in the database.
+* Puth the code
+* Make a pull request
 
 # Feature
-Pregled nezaključenih narudžbi 
+Review of unfinished orders
 ## Item
-Seller App treba imati mogućnost pregledati narudzbe koje nisu zaključene.
+The Seller App should be able to view orders that are not closed.
 ### Task
-* Kreirati end point
-* Implementirati metodu koja vraća listu svih narudzbi koje nisu zaključene.
-* Uraditi push koda
-* Napraviti pull request
+* Create end point
+* Implement a method that returns a list of all orders that have not been closed.
+* Push the code
+* Make a pull request
 
 # Feature
-Pregled svih sastojaka proizvoda 
+Overview of products ingredients
 ## Item
-Seller App treba imati mogućnost pregledati sve sastojke proizvoda.
+The Seller App should be able to see all product ingredients.
 ### Task
-* Kreirati end point
-* Proširiti model proizova (dodati Description i Barcode)
-* Implementirati metodu koja vraća listu svih proizvoda.
-* Uraditi push koda
-* Napraviti pull request
+* Create an end point
+* Expand Product model (add Description and Barcode)
+* Implement a method that returns a list of all products.
+* Push the code
+* Make a pull request
 
 # Feature
-Dobavljanje informacija o Cash Register-u
+Fetching Cash Register information
 ## Item
-Cash Register treba biti u mogućnosti pristupiti svim informacijama o sebi neophodnim za generisanje QR koda.
+The Cash Register should be able to access all the information about itself necessary to generate a QR code.
 ### Task
-* Kreirati end point
-* Implementirati model CashRegister 
-* Implementirati CashRegister controller
-* Implementirati CashRegister service
-* Implementirati CAshRegister repository
-* Kreirati end point
-* Implementirati metodu za vraćanje svih podataka o određenom Cash Register-u koje se čuvaju u bazi
-* Uraditi push koda
-* Napraviti pull request
+* Create an end point
+* Implement CashRegister model
+* Implement CashRegister controller
+* Implement CashRegister service
+* Implement CAshRegister repository
+* Create an end point
+* Implement a method to fetch all data about a particular Cash Register stored in the database
+* Push the code
+* Make a pull request
 
 # Feature
-Promjena šifre
+Change password
 ## Item
-Seller mobilna App i Cash Register trebaju moći saznati kada je korisnikova šifra promijenjena od strane administratora i u tom slučaju po loginu treba ga odmah preusmjeriti na promjenu vlastite šifre radi sigurnosti.
+Seller mobile App and Cash Register should be able to find out when the user's password has been changed by the administrator, and in that case the user should be immediately redirected to change its own password for security after the login.
 ### Task
-* Proširiti model User sa informacijom o privremenoj šifri i reset tokenu
-* Napraviti rutu na koju se šalje zahtjev s mailom-korisnika
-* Implementirati provjeru maila i slanje reset tokena na mail
-* Kreirati html formu maila
-* Implementirati rutu na koju se šalje sigurnosni token kako bi se provjerila njegova ispravnost
-* Implementirati metode za provjeru tokena
-* Implementirati rutu za spremanje novog passworda
-* Implementirati metode za promjenu passworda i pohranu u bazu
-* Poslati nove informacije o Useru Main serveru
-* Uraditi push koda
-* Napraviti pull request
+* Expand the User model with information about the temporary password and reset token
+* Create a route to which a request is sent with the user's mail
+* Implement email verification and send the reset token to the mail
+* Create html email form
+* Implement the route to which the security token is sent to verify it
+* Implement token verification methods
+* Implement a route to save the new password
+* Implement methods to change the password and store it in the database
+* Send new information about the User to the Main server
+* Push the code
+* Make a pull request
 
 # Feature
-Asinhrono primanje poruka
+Asynchronous message reception
 ## Item
-Korisnik Cash Register aplikacije i Seller mobilne aplikacije treba imati mogućnost asinhronog primanja poruka koje je poslao Guest user. 
+The user of the Cash Register application and the Seller mobile application should be able to receive messages sent by the Guest user asynchronously.
 ### Task
-
-* Kreirati konfiguracijsku klasu za WebSocket podršku
-* Dodati endpoint za websocket konekcije
-* Dodati topic na koji se klijenti trebaju subscribe da osluškuju notifikacije
-* Proširiti metodu za slanje notifikacija emitiranjem poruka koje su poslane
-* Uraditi push koda
-* Napraviti pull request
+* Create a configuration class for WebSocket support
+* Add an endpoint for websocket connections
+* Add a topic to which clients need to subscribe to listen to notifications
+* Extend the method for sending notifications by broadcasting messages that have been sent
+* Push the code
+* Make a pull request
 
 # Feature
-Pregled računa s uključenim PDV-om
+Receipt overview with VAT included
 ## Item
- Korisnik Cash Register App treba imati mogućnost pregleda računa uz informaciju o PDV-u proizvoda. 
+ The Cash Register App user should be able to view the receipt with product's VAT information.
 ### Task
-* Proširiti model proizvoda sa informacijom o PDV-u
-* Uz dobavljanje podataka o proizvodu s Main servera pokupiti i podatak o PDV-u
-* Uraditi push koda
-* Napraviti pull request
+* Expand product model with VAT information
+* In addition to obtaining product data from the Main server, also collect it's VAT information
+* Push the code
+* Make a pull request
 
 # Feature
-Grafički prikaz stolova
+Graphical table overview
 ## Item
-Korisnik Seller App i Cash Register App treba imati mogućnost uvida u prostorni razmještaj stolova/stolica/… u restoranu/ordinaciji/…
+The user of the Seller App and the Cash Register App should be able to see the arrangement of tables/chairs/… in the restaurant/shop/…
 ### Task
-* Kreirati Table model
-* Kreirati Table controller
-* Kreirati Tebale service
-* Kreirati Table repository
-* Implementirati metodu za dobavljanje informacija o broju stolova za poslovnicu od Main servera
-* Implementirati rutu za dobavljanja informacija o stolovima
-* Uraditi push koda
-* Napraviti pull request
+* Create Table model
+* Create Table controller
+* Create Table service
+* Create Table repository
+* Implement a method for obtaining the shop's table quantity information from the Main server
+* Implement a route to fetch table information
+* Push the code
+* Make a pull request
 
 # Feature
-Filtriranje proizvoda 
+Product filtering
 ## Item
-Korisnik Seller App treba imati mogućnost filtriranja svih proizvoda po sastojcima.
+The Seller App user should be able to filter all products by it's ingredients.
 ### Task
-* Implementirati metodu za dobvljanje svih proizvoda iz baze
-* Uraditi push koda
-* Napraviti pull request
+* Implement a method to retrieve all products from the database
+* Push the code
+* Make a pull request
 
 # Feature
-Konfiguracijske postavke aplikacija
+Application configuration settings
 ## Item
-Seller Mobilna App i Cash Register trebaju imati mogućnost dobavljanja informacija o konfiguracijskim postavkama (jezik, vrijeme).
+The Seller Mobile App and Cash Register should be able to obtain information about it's configuration settings (language, time).
 ### Task
-* Dobaviti informacije o konfiguracijama od Main servera
-* Implementirati rutu preko koje Cash Register server dobavlja informacije o konfiguracijama koje su mu potrebne
-* Implementirati rutu preko koje Seller App dobavlja informacije o konfiguracijama koje su joj potrebne
-* Uraditi push koda
-* Napraviti pull request
-
-
+* Obtain configuration information from the Main server
+* Implement the route through which the Cash Register server obtains the configuration information it needs
+* Implement the route through which the Seller App obtains the configuration information it needs
+* Push the code
+* Make a pull request
