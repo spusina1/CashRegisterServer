@@ -7,8 +7,6 @@ import ba.unsa.etf.si.local_server.repositories.BusinessRepository;
 import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
 import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +16,6 @@ import java.util.List;
 public class CashRegisterService {
     private final CashRegisterRepository cashRegisterRepository;
     private final BusinessRepository businessRepository;
-
-    @Value("${main_server.office_id}")
-    private long officeID;
-
-    @Value("${main_server.business_id}")
-    private long businessID;
-
-    private String businessName = "";
 
     public CashRegisterResponse registerCashRegister() {
         CashRegister cashRegister = cashRegisterRepository
@@ -46,11 +36,6 @@ public class CashRegisterService {
         cashRegisterRepository.flush();
     }
 
-    public void updateBusinessName(String businessName) {
-        this.businessName = businessName;
-    }
-
-//    @Scheduled(cron = "${cron.open}")
     public void openRegisters() {
         System.out.println("Opening cash registers...");
         List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
@@ -61,7 +46,6 @@ public class CashRegisterService {
         }
     }
 
-//    @Scheduled(cron = "${cron.close}")
     public void closeRegisters() {
         System.out.println("Closing cash registers...");
         List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
@@ -91,8 +75,8 @@ public class CashRegisterService {
         return new CashRegisterResponse(
                 cashRegister.getId(),
                 cashRegister.getName(),
-                officeID,
-                businessID,
+                null,
+                business.getId(),
                 business.getBusinessName(),
                 cashRegister.getUuid(),
                 business.getStartTime(),

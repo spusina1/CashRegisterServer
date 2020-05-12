@@ -15,9 +15,11 @@ import java.util.List;
 public class Business {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id = 1L;
 
+    private Long businessId;
+    private Long officeId;
     private String businessName;
     private boolean restaurant;
     private String language;
@@ -27,6 +29,6 @@ public class Business {
     private String placeName;
 
     @OneToMany(cascade =  CascadeType.ALL)
-    @JoinColumn(name = "bussines_id")
+    @JoinColumn(name = "business_id")
     private List<CashRegister> cashRegisters;
 }

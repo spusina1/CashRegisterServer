@@ -18,30 +18,30 @@ public class BusinessService {
     private final BusinessRepository businessRepository;
     private final CashRegisterRepository cashRegisterRepository;
 
-    @Value("${main_server.office_id}")
-    private long officeId;
+    public void updateBusinessInfo(Business business){
+        cashRegisterRepository.deleteAllInBatch();
+        cashRegisterRepository.flush();
+        businessRepository.deleteAllInBatch();
+        businessRepository.flush();
+        businessRepository.save(business);
+        businessRepository.flush();
+        cashRegisterRepository.flush();
+    }
 
-    @Value("${main_server.business_id}")
-    private long businessId;
-
- public void updateBussinesInfo(Business business){
-     cashRegisterRepository.deleteAllInBatch();
-     cashRegisterRepository.flush();
-     businessRepository.deleteAllInBatch();
-     businessRepository.flush();
-     businessRepository.save(business);
-     businessRepository.flush();
-     cashRegisterRepository.flush();
- }
+    public Business getCurrentBusiness() {
+        return businessRepository.findById(1L).orElse(null);
+    }
 
     public SellerAppInfoResponse getSellerAppData() {
+        Business currentBusiness = getCurrentBusiness();
+
         SellerAppInfoResponse sellerAppInfoResponse = new SellerAppInfoResponse();
         Business business = businessRepository.findAll().get(0);
         sellerAppInfoResponse.setBusinessName(business.getBusinessName());
         sellerAppInfoResponse.setLanguage(business.getLanguage());
         sellerAppInfoResponse.setRestaurant(business.isRestaurant());
-        sellerAppInfoResponse.setBusinessId(businessId);
-        sellerAppInfoResponse.setOfficeId(officeId);
+        sellerAppInfoResponse.setBusinessId(currentBusiness.getId());
+        sellerAppInfoResponse.setOfficeId(currentBusiness.getOfficeId());
         sellerAppInfoResponse.setPlaceName(business.getPlaceName());
         return sellerAppInfoResponse;
     }

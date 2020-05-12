@@ -6,13 +6,9 @@ import ba.unsa.etf.si.local_server.models.CashRegister;
 import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.Table;
 import ba.unsa.etf.si.local_server.models.User;
-import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
-import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -20,42 +16,49 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 
-@RequiredArgsConstructor
 @Service
 public class MainSyncUpService {
     private final HttpClientService httpClientService;
     private final UserService userService;
     private final ProductService productService;
-    private final CashRegisterService cashRegisterService;
     private final BusinessService businessService;
     private final TableService tableService;
 
-    boolean restaurant;
+    public MainSyncUpService(
+            HttpClientService httpClientService,
+            UserService userService,
+            ProductService productService,
+            BusinessService businessService,
+            TableService tableService
+    ) {
+        this.httpClientService = httpClientService;
+        this.userService = userService;
+        this.productService = productService;
+        this.businessService = businessService;
+        this.tableService = tableService;
+    }
 
-    @Value("${main_server.office_id}")
-    private long officeID;
-
-    @Value("${main_server.business_id}")
-    private long businessID;
+    private boolean restaurant;
 
     @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
 
+        Business business = fetchBusinessFromMain();
         List<User> users = fetchUsersFromMain();
         List<Product> products = fetchProductsFromMain();
-        Business business = fetchBusinessFromMain();
         List<Table> tables = fetchTablesFromMain();
         
         userService.batchInsertUsers(users);
         productService.batchInsertProducts(products);
-        businessService.updateBussinesInfo(business);
+        businessService.updateBusinessInfo(business);
         tableService.batchInsertTables(tables);
 
         System.out.println("Yaaay, Synchronisation complete!");
     }
 
     private List<Product> fetchProductsFromMain() {
+        Long officeID = businessService.getCurrentBusiness().getOfficeId();
         String uri = String.format("/offices/%d/products", officeID);
         String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToProduct);
@@ -67,19 +70,23 @@ public class MainSyncUpService {
         return jsonListToObjectList(json, this::mapJsonToUser);
     }
 
+    // TODO: Fetch data based on user account and not on ids
     private Business fetchBusinessFromMain() {
-        String uri = String.format("/business/%d/office-details/%d", businessID, officeID);
+//        String uri = String.format("/business/%d/office-details/%d", businessID, officeID);
+        String uri = String.format("/business/%d/office-details/%d", 1, 1);
         String json = httpClientService.makeGetRequest(uri);
         ObjectMapper objectMapper = new ObjectMapper();
 
         Business business = new Business();
-
         String jsonArray;
 
         try {
             JsonNode jsonNode = objectMapper.readTree(json);
             jsonArray = jsonNode.get("cashRegisters").toString();
 
+            // TODO: Check json property names
+            Long businessId = jsonNode.get("id").asLong();
+            Long officeId = jsonNode.get("officeId").asLong();
             String businessName = jsonNode.get("businessName").asText();
             restaurant = jsonNode.get("restaurant").asBoolean();
             String language = jsonNode.get("language").asText();
@@ -87,6 +94,9 @@ public class MainSyncUpService {
             String endTime = jsonNode.get("endTime").asText();
             String syncTime = jsonNode.get("syncTime").asText();
             String placeName = jsonNode.get("placeName").asText();
+
+            business.setBusinessId(businessId);
+            business.setOfficeId(officeId);
             business.setBusinessName(businessName);
             business.setRestaurant(restaurant);
             business.setLanguage(language);
@@ -95,7 +105,6 @@ public class MainSyncUpService {
             business.setSyncTime(syncTime);
             business.setPlaceName(placeName);
 
-            cashRegisterService.updateBusinessName(businessName);
         } catch (JsonProcessingException e) {
             throw new AppException("Expected json response");
         }
@@ -179,7 +188,8 @@ public class MainSyncUpService {
 
     private List<Table> fetchTablesFromMain() {
         if(!restaurant) return jsonListToObjectList("[]", this::mapJsonToTable);
-        String uri = String.format("/offices/%d/tables", officeID);
+        Long officeId = businessService.getCurrentBusiness().getOfficeId();
+        String uri = String.format("/offices/%d/tables", officeId);
         String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToTable);
     }
