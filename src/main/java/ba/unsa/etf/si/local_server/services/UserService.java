@@ -8,27 +8,21 @@ import ba.unsa.etf.si.local_server.repositories.RoleRepository;
 import ba.unsa.etf.si.local_server.repositories.UserRepository;
 import ba.unsa.etf.si.local_server.requests.*;
 import freemarker.template.TemplateException;
-import lombok.AllArgsConstructor;
 import ba.unsa.etf.si.local_server.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
-import javax.mail.internet.*;
 import java.io.IOException;
 import java.util.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
@@ -39,6 +33,11 @@ public class UserService {
     private final MailService mailService;
     private final MainPasswordService mainPasswordService;
 
+    @Value("${main_server.login_username}")
+    private String serverUsername;
+
+    @Value("${main_server.login_password}")
+    private String serverPassword;
 
     public String authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -100,11 +99,10 @@ public class UserService {
     }
 
     public String generateResetToken(GetResetTokenRequest getResetTokenRequest) throws MessagingException, IOException, TemplateException {
-
         Optional<User> user=  userRepository.findByUsername(getResetTokenRequest.getUserInfo());
-        if(!user.isPresent()){
+        if(!user.isPresent()) {
             user = userRepository.findByEmail(getResetTokenRequest.getUserInfo());
-            if(!user.isPresent()){
+            if(!user.isPresent()) {
                 return "The username or email you entered doesn't belong to an account. Please check and try again!";
             }
         }
@@ -113,19 +111,17 @@ public class UserService {
         userRepository.save(user.get());
         mailService.sendmail(user.get().getEmail(), user.get().getName(), resetToken);
         return "Token is sent!";
-
     }
 
-
     public String verifyInfo(VerifyInfoRequest verifyInfoRequest) {
-        Optional<User> user=  userRepository.findByUsername(verifyInfoRequest.getUserInfo());
-        if(!user.isPresent()){
+        Optional<User> user = userRepository.findByUsername(verifyInfoRequest.getUserInfo());
+        if(!user.isPresent()) {
             user = userRepository.findByEmail(verifyInfoRequest.getUserInfo());
-            if(!user.isPresent()){
+            if(!user.isPresent()) {
                 return "Incorrect verification info!";
             }
         }
-        if(user.get().getResetToken().equals(verifyInfoRequest.getResetToken())){
+        if(user.get().getResetToken().equals(verifyInfoRequest.getResetToken())) {
             return "OK";
         }
 
@@ -133,7 +129,6 @@ public class UserService {
     }
 
     public String changePassword(SavePasswordRequest savePasswordRequest) {
-
         Optional<User> user=  userRepository.findByUsername(savePasswordRequest.getUserInfo());
         if(!user.isPresent()){
             user = userRepository.findByEmail(savePasswordRequest.getUserInfo());
@@ -147,7 +142,14 @@ public class UserService {
         userRepository.save(user.get());
         NewPasswordRequest newPasswordRequest = new NewPasswordRequest(user.get().getUsername(), user.get().getPassword());
         mainPasswordService.postToMain(newPasswordRequest);
-
-     return "Password successfully changed!";
+        return "Password successfully changed!";
     }
+
+    public boolean isServerUser(LoginRequest loginRequest) {
+        if(loginRequest == null || loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
+            return false;
+        }
+        return loginRequest.getUsername().equals(serverUsername) && loginRequest.getPassword().equals(serverPassword);
+    }
+
 }
