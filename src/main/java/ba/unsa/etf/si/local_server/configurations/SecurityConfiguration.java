@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final String[] unprotectedRoutes = {
+            "/api/sync",
             "/api/reset-token",
             "/api/verification-info",
             "/api/password",

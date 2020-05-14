@@ -9,13 +9,14 @@ import ba.unsa.etf.si.local_server.models.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.scheduling.annotation.Scheduled;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 
+@RequiredArgsConstructor
 @Service
 public class MainSyncUpService {
     private final HttpClientService httpClientService;
@@ -24,37 +25,36 @@ public class MainSyncUpService {
     private final BusinessService businessService;
     private final TableService tableService;
 
-    public MainSyncUpService(
-            HttpClientService httpClientService,
-            UserService userService,
-            ProductService productService,
-            BusinessService businessService,
-            TableService tableService
-    ) {
-        this.httpClientService = httpClientService;
-        this.userService = userService;
-        this.productService = productService;
-        this.businessService = businessService;
-        this.tableService = tableService;
-    }
 
-    private boolean restaurant;
-
-    @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
         System.out.println("Synchronizing databases...");
 
-        Business business = fetchBusinessFromMain();
-        List<User> users = fetchUsersFromMain();
-        List<Product> products = fetchProductsFromMain();
-        List<Table> tables = fetchTablesFromMain();
-        
-        userService.batchInsertUsers(users);
-        productService.batchInsertProducts(products);
-        businessService.updateBusinessInfo(business);
-        tableService.batchInsertTables(tables);
+        syncBusiness();
+        syncProducts();
+        syncUsers();
+        syncTables();
 
         System.out.println("Yaaay, Synchronisation complete!");
+    }
+
+    public void syncBusiness() {
+        Business business = fetchBusinessFromMain();
+        businessService.updateBusinessInfo(business);
+    }
+
+    public void syncProducts() {
+        List<Product> products = fetchProductsFromMain();
+        productService.batchInsertProducts(products);
+    }
+
+    public void syncUsers() {
+        List<User> users = fetchUsersFromMain();
+        userService.batchInsertUsers(users);
+    }
+
+    public void syncTables() {
+        List<Table> tables = fetchTablesFromMain();
+        tableService.batchInsertTables(tables);
     }
 
     private List<Product> fetchProductsFromMain() {
@@ -70,10 +70,8 @@ public class MainSyncUpService {
         return jsonListToObjectList(json, this::mapJsonToUser);
     }
 
-    // TODO: Fetch data based on user account and not on ids
     private Business fetchBusinessFromMain() {
-//        String uri = String.format("/business/%d/office-details/%d", businessID, officeID);
-        String uri = String.format("/business/%d/office-details/%d", 1, 1);
+        String uri = "/business/office-details";
         String json = httpClientService.makeGetRequest(uri);
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -84,11 +82,10 @@ public class MainSyncUpService {
             JsonNode jsonNode = objectMapper.readTree(json);
             jsonArray = jsonNode.get("cashRegisters").toString();
 
-            // TODO: Check json property names
-            Long businessId = jsonNode.get("id").asLong();
+            Long businessId = jsonNode.get("businessId").asLong();
             Long officeId = jsonNode.get("officeId").asLong();
             String businessName = jsonNode.get("businessName").asText();
-            restaurant = jsonNode.get("restaurant").asBoolean();
+            boolean restaurant = jsonNode.get("restaurant").asBoolean();
             String language = jsonNode.get("language").asText();
             String startTime = jsonNode.get("startTime").asText();
             String endTime = jsonNode.get("endTime").asText();
@@ -187,7 +184,10 @@ public class MainSyncUpService {
     }
 
     private List<Table> fetchTablesFromMain() {
-        if(!restaurant) return jsonListToObjectList("[]", this::mapJsonToTable);
+        Business currentBusiness = businessService.getCurrentBusiness();
+        if(!currentBusiness.isRestaurant()) {
+            return jsonListToObjectList("[]", this::mapJsonToTable);
+        }
         Long officeId = businessService.getCurrentBusiness().getOfficeId();
         String uri = String.format("/offices/%d/tables", officeId);
         String json = httpClientService.makeGetRequest(uri);

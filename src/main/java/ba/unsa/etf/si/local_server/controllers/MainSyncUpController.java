@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class MainSyncUpController {
     private final MainSyncUpService mainSyncUpService;
 
-    @Secured("ROLE_OFFICEMAN")
+    // TODO: Implement login with office server account
     @PostMapping("/sync")
     public ResponseEntity<Response> syncDatabases() {
         mainSyncUpService.syncDatabases();
