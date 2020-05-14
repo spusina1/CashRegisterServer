@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,37 +26,55 @@ public class MainSyncUpService {
     private final ProductService productService;
     private final BusinessService businessService;
     private final TableService tableService;
+    private final CashRegisterService cashRegisterService;
+    private final TaskScheduleService taskScheduleService;
 
+    private final Logger logger = LoggerFactory.getLogger(MainSyncUpService.class);
 
     public void syncDatabases() {
-        System.out.println("Synchronizing databases...");
-
         syncBusiness();
         syncProducts();
         syncUsers();
         syncTables();
-
-        System.out.println("Yaaay, Synchronisation complete!");
+        scheduleTasks();
     }
 
     public void syncBusiness() {
+        logger.info("Business sync started...");
         Business business = fetchBusinessFromMain();
         businessService.updateBusinessInfo(business);
+        logger.info("Business sync finished!");
     }
 
     public void syncProducts() {
+        logger.info("Products sync started...");
         List<Product> products = fetchProductsFromMain();
         productService.batchInsertProducts(products);
+        logger.info("Products sync finished!");
     }
 
     public void syncUsers() {
+        logger.info("Users sync started...");
         List<User> users = fetchUsersFromMain();
         userService.batchInsertUsers(users);
+        logger.info("Users sync finished!");
     }
 
     public void syncTables() {
+        logger.info("Tables sync started...");
         List<Table> tables = fetchTablesFromMain();
         tableService.batchInsertTables(tables);
+        logger.info("Tables sync finished!");
+    }
+
+    private void scheduleTasks() {
+        Business business = businessService.getCurrentBusiness();
+        taskScheduleService.scheduleSync(business.getSyncTime(), this::syncDatabases);
+        taskScheduleService.scheduleCashRegisterOpen(business.getStartTime(), cashRegisterService::openRegisters);
+        taskScheduleService.scheduleCashRegisterClose(business.getEndTime(), cashRegisterService::closeRegisters);
+        logger.info(String.format("Synchronisation scheduled for %s", business.getSyncTime()));
+        logger.info(String.format("Cash registers open scheduled for %s", business.getStartTime()));
+        logger.info(String.format("Cash registers close scheduled for %s", business.getEndTime()));
     }
 
     private List<Product> fetchProductsFromMain() {
