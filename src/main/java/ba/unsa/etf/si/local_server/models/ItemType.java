@@ -16,5 +16,4 @@ public class ItemType {
     @Id
     private Long id;
     private String name;
-    private Long businessId;
 }

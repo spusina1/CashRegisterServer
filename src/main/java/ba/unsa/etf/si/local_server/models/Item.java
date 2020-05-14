@@ -16,17 +16,6 @@ import javax.persistence.*;
 public class Item {
     @Id
     private Long id;
-
     private String name;
     private String unit;
-
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private ItemType itemType;
-
-    public Item(String name, String unit, ItemType itemType) {
-        this.name = name;
-        this.unit = unit;
-        this.itemType = itemType;
-    }
 }

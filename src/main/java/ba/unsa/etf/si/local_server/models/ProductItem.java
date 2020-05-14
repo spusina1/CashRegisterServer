@@ -1,5 +1,6 @@
 package ba.unsa.etf.si.local_server.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,20 +13,18 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@javax.persistence.Table(name = "procucts_items")
+@javax.persistence.Table(name = "products_items")
 public class ProductItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Long id;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-//    @JoinColumn("product_id")
+    @JsonIgnore
     private Product product;
 
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-//    @JoinColumn("item_id")
+    @ManyToOne(cascade = CascadeType.ALL)
     private Item item;
 
     private double value;

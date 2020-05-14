@@ -40,10 +40,10 @@ public class Product {
 
     private Double pdv;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private ItemType itemType;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductItem> productItems;
 
 }
