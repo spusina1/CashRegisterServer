@@ -1,11 +1,7 @@
 package ba.unsa.etf.si.local_server.services;
 
 import ba.unsa.etf.si.local_server.exceptions.AppException;
-import ba.unsa.etf.si.local_server.models.Business;
-import ba.unsa.etf.si.local_server.models.CashRegister;
-import ba.unsa.etf.si.local_server.models.Product;
-import ba.unsa.etf.si.local_server.models.Table;
-import ba.unsa.etf.si.local_server.models.User;
+import ba.unsa.etf.si.local_server.models.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import springfox.documentation.spring.web.json.Json;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -165,7 +162,39 @@ public class MainSyncUpService {
         String description = productNode.get("description").asText();
         Double pdv = productNode.get("pdv").asDouble();
 
-        return new Product(id, name, quantity, price, discount, unit, image, barcode, description, pdv);
+        Product product = new Product(
+                id, name, quantity, price, discount, unit, image,
+                barcode, description, pdv, null, null
+        );
+
+        ItemType itemType;
+        List<ProductItem> productItems;
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            itemType = objectMapper.readValue(productNode.get("itemType").toString(), ItemType.class);
+            String productItemsJson = productNode.get("items").toString();
+            productItems = jsonListToObjectList(productItemsJson, this::mapJsonToProductItem);
+            productItems.forEach(productItem -> productItem.setProduct(product));
+        } catch (JsonProcessingException e) {
+            throw new AppException("Invalid product json from main");
+        }
+
+        product.setItemType(itemType);
+        product.setProductItems(productItems);
+
+        return product;
+    }
+
+    private ProductItem mapJsonToProductItem(JsonNode jsonNode) {
+        Double value = jsonNode.get("value").asDouble();
+        JsonNode itemNode = jsonNode.get("item");
+
+        Long id = itemNode.get("id").asLong();
+        String name = itemNode.get("name").asText();
+        String unit = itemNode.get("unit").asText();
+        Item item = new Item(id,name, unit);
+        return new ProductItem(null, null, item, value);
     }
 
     private User mapJsonToUser(JsonNode jsonNode) {
