@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -38,5 +39,11 @@ public class Product {
     private String description;
 
     private Double pdv;
+
+    @ManyToOne
+    private ItemType itemType;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductItem> productItems;
 
 }

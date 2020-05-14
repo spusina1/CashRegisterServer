@@ -165,7 +165,7 @@ public class MainSyncUpService {
         String description = productNode.get("description").asText();
         Double pdv = productNode.get("pdv").asDouble();
 
-        return new Product(id, name, quantity, price, discount, unit, image, barcode, description, pdv);
+        return new Product(id, name, quantity, price, discount, unit, image, barcode, description, pdv, null, null);
     }
 
     private User mapJsonToUser(JsonNode jsonNode) {
