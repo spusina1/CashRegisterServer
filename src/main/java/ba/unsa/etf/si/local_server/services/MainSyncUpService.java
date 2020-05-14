@@ -6,14 +6,12 @@ import ba.unsa.etf.si.local_server.models.CashRegister;
 import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.Table;
 import ba.unsa.etf.si.local_server.models.User;
-import ba.unsa.etf.si.local_server.repositories.CashRegisterRepository;
-import ba.unsa.etf.si.local_server.responses.CashRegisterResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,36 +24,61 @@ public class MainSyncUpService {
     private final HttpClientService httpClientService;
     private final UserService userService;
     private final ProductService productService;
-    private final CashRegisterService cashRegisterService;
     private final BusinessService businessService;
     private final TableService tableService;
+    private final CashRegisterService cashRegisterService;
+    private final TaskScheduleService taskScheduleService;
 
-    boolean restaurant;
+    private final Logger logger = LoggerFactory.getLogger(MainSyncUpService.class);
 
-    @Value("${main_server.office_id}")
-    private long officeID;
-
-    @Value("${main_server.business_id}")
-    private long businessID;
-
-    @Scheduled(cron = "${cron.main_fetch}")
     public void syncDatabases() {
-        System.out.println("Synchronizing databases...");
+        syncBusiness();
+        syncProducts();
+        syncUsers();
+        syncTables();
+        scheduleTasks();
+    }
 
-        List<User> users = fetchUsersFromMain();
-        List<Product> products = fetchProductsFromMain();
+    public void syncBusiness() {
+        logger.info("Business sync started...");
         Business business = fetchBusinessFromMain();
-        List<Table> tables = fetchTablesFromMain();
-        
-        userService.batchInsertUsers(users);
-        productService.batchInsertProducts(products);
-        businessService.updateBussinesInfo(business);
-        tableService.batchInsertTables(tables);
+        businessService.updateBusinessInfo(business);
+        logger.info("Business sync finished!");
+    }
 
-        System.out.println("Yaaay, Synchronisation complete!");
+    public void syncProducts() {
+        logger.info("Products sync started...");
+        List<Product> products = fetchProductsFromMain();
+        productService.batchInsertProducts(products);
+        logger.info("Products sync finished!");
+    }
+
+    public void syncUsers() {
+        logger.info("Users sync started...");
+        List<User> users = fetchUsersFromMain();
+        userService.batchInsertUsers(users);
+        logger.info("Users sync finished!");
+    }
+
+    public void syncTables() {
+        logger.info("Tables sync started...");
+        List<Table> tables = fetchTablesFromMain();
+        tableService.batchInsertTables(tables);
+        logger.info("Tables sync finished!");
+    }
+
+    private void scheduleTasks() {
+        Business business = businessService.getCurrentBusiness();
+        taskScheduleService.scheduleSync(business.getSyncTime(), this::syncDatabases);
+        taskScheduleService.scheduleCashRegisterOpen(business.getStartTime(), cashRegisterService::openRegisters);
+        taskScheduleService.scheduleCashRegisterClose(business.getEndTime(), cashRegisterService::closeRegisters);
+        logger.info(String.format("Synchronisation scheduled for %s", business.getSyncTime()));
+        logger.info(String.format("Cash registers open scheduled for %s", business.getStartTime()));
+        logger.info(String.format("Cash registers close scheduled for %s", business.getEndTime()));
     }
 
     private List<Product> fetchProductsFromMain() {
+        Long officeID = businessService.getCurrentBusiness().getOfficeId();
         String uri = String.format("/offices/%d/products", officeID);
         String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToProduct);
@@ -68,25 +91,29 @@ public class MainSyncUpService {
     }
 
     private Business fetchBusinessFromMain() {
-        String uri = String.format("/business/%d/office-details/%d", businessID, officeID);
+        String uri = "/business/office-details";
         String json = httpClientService.makeGetRequest(uri);
         ObjectMapper objectMapper = new ObjectMapper();
 
         Business business = new Business();
-
         String jsonArray;
 
         try {
             JsonNode jsonNode = objectMapper.readTree(json);
             jsonArray = jsonNode.get("cashRegisters").toString();
 
+            Long businessId = jsonNode.get("businessId").asLong();
+            Long officeId = jsonNode.get("officeId").asLong();
             String businessName = jsonNode.get("businessName").asText();
-            restaurant = jsonNode.get("restaurant").asBoolean();
+            boolean restaurant = jsonNode.get("restaurant").asBoolean();
             String language = jsonNode.get("language").asText();
             String startTime = jsonNode.get("startTime").asText();
             String endTime = jsonNode.get("endTime").asText();
             String syncTime = jsonNode.get("syncTime").asText();
             String placeName = jsonNode.get("placeName").asText();
+
+            business.setBusinessId(businessId);
+            business.setOfficeId(officeId);
             business.setBusinessName(businessName);
             business.setRestaurant(restaurant);
             business.setLanguage(language);
@@ -95,7 +122,6 @@ public class MainSyncUpService {
             business.setSyncTime(syncTime);
             business.setPlaceName(placeName);
 
-            cashRegisterService.updateBusinessName(businessName);
         } catch (JsonProcessingException e) {
             throw new AppException("Expected json response");
         }
@@ -178,8 +204,12 @@ public class MainSyncUpService {
     }
 
     private List<Table> fetchTablesFromMain() {
-        if(!restaurant) return jsonListToObjectList("[]", this::mapJsonToTable);
-        String uri = String.format("/offices/%d/tables", officeID);
+        Business currentBusiness = businessService.getCurrentBusiness();
+        if(!currentBusiness.isRestaurant()) {
+            return jsonListToObjectList("[]", this::mapJsonToTable);
+        }
+        Long officeId = businessService.getCurrentBusiness().getOfficeId();
+        String uri = String.format("/offices/%d/tables", officeId);
         String json = httpClientService.makeGetRequest(uri);
         return jsonListToObjectList(json, this::mapJsonToTable);
     }
