@@ -8,5 +8,5 @@ import lombok.Data;
 public class MainLoginRequest {
     private String username;
     private String password;
-    private final String role = "ROLE_OFFICEMAN";
+    private final String role = "ROLE_SERVER";
 }
