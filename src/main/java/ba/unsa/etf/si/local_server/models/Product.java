@@ -3,6 +3,8 @@ package ba.unsa.etf.si.local_server.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.persistence.Table;
@@ -44,6 +46,7 @@ public class Product {
     private ItemType itemType;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ProductItem> productItems;
 
 }
