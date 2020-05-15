@@ -72,10 +72,6 @@ public class ReceiptService {
     }
 
     public String checkRequest(ReceiptRequest receiptRequest) {
-        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId())) {
-            throw new CashRegisterClosedException("Cash register is closed!");
-        }
-
         Receipt receipt;
 
         if(receiptRequest.getId() == null) {
