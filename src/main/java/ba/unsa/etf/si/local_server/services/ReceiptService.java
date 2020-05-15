@@ -4,6 +4,7 @@ import ba.unsa.etf.si.local_server.exceptions.AppException;
 import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
 import ba.unsa.etf.si.local_server.exceptions.CashRegisterClosedException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
+import ba.unsa.etf.si.local_server.models.Business;
 import ba.unsa.etf.si.local_server.models.transactions.*;
 import ba.unsa.etf.si.local_server.repositories.ReceiptItemRepository;
 import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
@@ -23,6 +24,7 @@ import ba.unsa.etf.si.local_server.requests.SellerAppRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
@@ -42,12 +44,8 @@ public class ReceiptService {
     private final ProductService productService;
     private final MainReceiptService mainReceiptService;
     private final CashRegisterService cashRegisterService;
-
-    @Value("${main_server.office_id}")
-    private long officeId;
-
-    @Value("${main_server.business_id}")
-    private long businessId;
+    private final BusinessService businessService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
 
     public ResponseEntity<Object> deleteReceipt(Long id){
@@ -74,9 +72,9 @@ public class ReceiptService {
     }
 
     public String checkRequest(ReceiptRequest receiptRequest) {
-//        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId())) {
-//            throw new CashRegisterClosedException("Cash register is closed!");
-//        }
+        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId())) {
+            throw new CashRegisterClosedException("Cash register is closed!");
+        }
 
         Receipt receipt;
 
@@ -103,10 +101,12 @@ public class ReceiptService {
         String[] receiptIdData = receiptRequest.getReceiptId().split("-");
         Long timestamp = Long.parseLong(receiptIdData[3]);
 
+        Business currentBusiness = businessService.getCurrentBusiness();
+
         receipt.setReceiptId(receiptRequest.getReceiptId());
         receipt.setCashRegisterId(receiptRequest.getCashRegisterId());
-        receipt.setOfficeId(officeId);
-        receipt.setBusinessId(businessId);
+        receipt.setOfficeId(currentBusiness.getOfficeId());
+        receipt.setBusinessId(currentBusiness.getBusinessId());
         receipt.setUsername(receiptRequest.getUsername());
         receipt.setReceiptStatus(receiptStatus);
         receipt.setPaymentMethod(paymentMethod);
@@ -119,10 +119,6 @@ public class ReceiptService {
 
         receiptRepository.save(receipt);
         mainReceiptService.postReceiptToMain(receipt);
-
-        if(receipt.getReceiptStatus() == PENDING) {
-            mainReceiptService.pollReceiptStatus(receipt.getReceiptId());
-        }
 
         return "Successfully created receipt";
     }
@@ -223,29 +219,35 @@ public class ReceiptService {
                 .collect(Collectors.toList());
     }
 
-    public String saveOrder(SellerAppRequest receiptItems) {
-        if(receiptItems.getReceiptItems() != null){
+    public String saveOrder(SellerAppRequest sellerAppRequest) {
+        if(sellerAppRequest.getReceiptItems() != null){
             Receipt newReceipt = new Receipt();
 
-            if(!receiptItems.getMessage().equals("")){
+            if(!sellerAppRequest.getMessage().equals("")){
                 newReceipt.setReceiptStatus(GUEST_ORDER);
-                newReceipt.setMessage(receiptItems.getMessage());
+                newReceipt.setMessage(sellerAppRequest.getMessage());
             }
             else {
                 newReceipt.setReceiptStatus(UNPROCESSED);
             }
 
             newReceipt.setCashRegisterId(-1L);
-            newReceipt.setServed(receiptItems.isServed());
-            newReceipt.setSeen(receiptItems.isSeen());
+            newReceipt.setServed(sellerAppRequest.isServed());
+            newReceipt.setSeen(sellerAppRequest.isSeen());
 
-            Set<ReceiptItem> items = receiptItems
+            Set<ReceiptItem> items = sellerAppRequest
                     .getReceiptItems()
                     .stream()
                     .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
                     .collect(Collectors.toSet());
             newReceipt.setReceiptItems(items);
             receiptRepository.save(newReceipt);
+
+            if(newReceipt.getReceiptStatus().equals(GUEST_ORDER)) {
+                System.out.println("GUEST ORDER");
+                simpMessagingTemplate.convertAndSend("/topic/guest_order", "A guest has placed an order!");
+            }
+
             return  "Order is successfully saved!";
         }
         return "";
@@ -327,17 +329,18 @@ public class ReceiptService {
                 return "Request denied. Order already closed!";
             }
 
-                receiptItemRepository.deleteByReceipt(order.get().getId());
-                Set<ReceiptItem> items = guestOrderRequest
-                        .getReceiptItems()
-                        .stream()
-                        .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
-                        .collect(Collectors.toSet());
-                order.get().setReceiptItems(items);
-                receiptItemRepository.saveAll(items);
-                order.get().setReceiptStatus(UNPROCESSED);
-                receiptRepository.save(order.get());
-                return "Order is successfully saved!";
+            receiptItemRepository.deleteByReceipt(order.get().getId());
+            Set<ReceiptItem> items = guestOrderRequest
+                    .getReceiptItems()
+                    .stream()
+                    .map(receiptItemRequest -> new ReceiptItem(null, receiptItemRequest.getId(), receiptItemRequest.getQuantity()))
+                    .collect(Collectors.toSet());
+            order.get().setReceiptItems(items);
+            receiptItemRepository.saveAll(items);
+            order.get().setReceiptStatus(UNPROCESSED);
+            receiptRepository.save(order.get());
+
+            return "Order is successfully saved!";
         }
         return "Request denied. Incorrect id!";
     }
