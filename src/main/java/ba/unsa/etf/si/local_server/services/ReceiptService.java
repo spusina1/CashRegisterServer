@@ -4,6 +4,7 @@ import ba.unsa.etf.si.local_server.exceptions.AppException;
 import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
 import ba.unsa.etf.si.local_server.exceptions.CashRegisterClosedException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
+import ba.unsa.etf.si.local_server.models.Business;
 import ba.unsa.etf.si.local_server.models.transactions.*;
 import ba.unsa.etf.si.local_server.repositories.ReceiptItemRepository;
 import ba.unsa.etf.si.local_server.requests.EditOrderRequest;
@@ -42,12 +43,7 @@ public class ReceiptService {
     private final ProductService productService;
     private final MainReceiptService mainReceiptService;
     private final CashRegisterService cashRegisterService;
-
-    @Value("${main_server.office_id}")
-    private long officeId;
-
-    @Value("${main_server.business_id}")
-    private long businessId;
+    private final BusinessService businessService;
 
 
     public ResponseEntity<Object> deleteReceipt(Long id){
@@ -74,9 +70,9 @@ public class ReceiptService {
     }
 
     public String checkRequest(ReceiptRequest receiptRequest) {
-//        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId())) {
-//            throw new CashRegisterClosedException("Cash register is closed!");
-//        }
+        if(!cashRegisterService.isCashRegisterOpen(receiptRequest.getCashRegisterId())) {
+            throw new CashRegisterClosedException("Cash register is closed!");
+        }
 
         Receipt receipt;
 
@@ -103,10 +99,12 @@ public class ReceiptService {
         String[] receiptIdData = receiptRequest.getReceiptId().split("-");
         Long timestamp = Long.parseLong(receiptIdData[3]);
 
+        Business currentBusiness = businessService.getCurrentBusiness();
+
         receipt.setReceiptId(receiptRequest.getReceiptId());
         receipt.setCashRegisterId(receiptRequest.getCashRegisterId());
-        receipt.setOfficeId(officeId);
-        receipt.setBusinessId(businessId);
+        receipt.setOfficeId(currentBusiness.getOfficeId());
+        receipt.setBusinessId(currentBusiness.getBusinessId());
         receipt.setUsername(receiptRequest.getUsername());
         receipt.setReceiptStatus(receiptStatus);
         receipt.setPaymentMethod(paymentMethod);
@@ -119,10 +117,6 @@ public class ReceiptService {
 
         receiptRepository.save(receipt);
         mainReceiptService.postReceiptToMain(receipt);
-
-        if(receipt.getReceiptStatus() == PENDING) {
-            mainReceiptService.pollReceiptStatus(receipt.getReceiptId());
-        }
 
         return "Successfully created receipt";
     }

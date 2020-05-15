@@ -1,5 +1,6 @@
-package ba.unsa.etf.si.local_server.services.StompClient;
+package ba.unsa.etf.si.local_server.services;
 
+import ba.unsa.etf.si.local_server.requests.WebSocketNotification;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -7,7 +8,7 @@ import org.springframework.messaging.simp.stomp.StompSessionHandler;
 
 import java.lang.reflect.Type;
 
-public class ReceiptStompSessionHandler implements StompSessionHandler {
+public class MainStompSessionHandler implements StompSessionHandler {
     @Override
     public void afterConnected(StompSession session, StompHeaders stompHeaders) {
         System.out.println("Connected; Session id: " + session.getSessionId());
@@ -23,16 +24,19 @@ public class ReceiptStompSessionHandler implements StompSessionHandler {
     @Override
     public void handleTransportError(StompSession stompSession, Throwable throwable) {
         System.err.println("Handle transport error!");
+        throwable.printStackTrace();
     }
 
     @Override
     public Type getPayloadType(StompHeaders stompHeaders) {
-        return String.class;
+        return WebSocketNotification.class;
     }
 
     @Override
     public void handleFrame(StompHeaders stompHeaders, Object payload) {
-        String msg = (String) payload;
-        System.out.println(String.format("Received: %s", msg));
+        WebSocketNotification notification = (WebSocketNotification) payload;
+        System.out.println(String.format("Received: %s", notification.getPayload().getDescription()));
+
+        // TODO: For receipt frame handler check the action and set product state
     }
 }

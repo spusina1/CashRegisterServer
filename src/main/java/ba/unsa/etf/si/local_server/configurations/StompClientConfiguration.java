@@ -1,5 +1,6 @@
-package ba.unsa.etf.si.local_server.services.StompClient;
+package ba.unsa.etf.si.local_server.configurations;
 
+import ba.unsa.etf.si.local_server.services.MainStompSessionHandler;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -16,22 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class MainStompClient {
+public class StompClientConfiguration {
     private final String URL = "ws://log-server-si.herokuapp.com/ws";
-
-    // TODO: Check if this works!!! Create json
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public WebSocketStompClient getReceiptStompClient() {
-        System.out.println("YAAAAY I'M CREATED!!!!");
+    public WebSocketStompClient getStompClient() {
         WebSocketClient simpleWebSocketClient = new StandardWebSocketClient();
         List<Transport> transports = new ArrayList<>(1);
         transports.add(new WebSocketTransport(simpleWebSocketClient));
         SockJsClient sockJsClient = new SockJsClient(transports);
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        stompClient.connect(URL, new ReceiptStompSessionHandler());
+        stompClient.connect(URL, new MainStompSessionHandler());
         return stompClient;
     }
 
