@@ -1,6 +1,9 @@
 package ba.unsa.etf.si.local_server.configurations;
 
 import ba.unsa.etf.si.local_server.services.MainStompSessionHandler;
+import ba.unsa.etf.si.local_server.services.MainSyncUpService;
+import ba.unsa.etf.si.local_server.services.ReceiptService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -17,8 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class StompClientConfiguration {
     private final String URL = "ws://log-server-si.herokuapp.com/ws";
+    private final MainSyncUpService mainSyncUpService;
+    private final ReceiptService receiptService;
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -29,7 +35,7 @@ public class StompClientConfiguration {
         SockJsClient sockJsClient = new SockJsClient(transports);
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        stompClient.connect(URL, new MainStompSessionHandler());
+        stompClient.connect(URL, new MainStompSessionHandler(receiptService, mainSyncUpService));
         return stompClient;
     }
 

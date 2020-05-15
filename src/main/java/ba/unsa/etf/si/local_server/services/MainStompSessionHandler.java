@@ -76,6 +76,8 @@ public class MainStompSessionHandler implements StompSessionHandler {
     private void handleOfficeProductsAdd(WebSocketPayload payload) {
         try {
             JsonNode jsonNode = getJsonFromPayload(payload);
+            JsonNode inventory = jsonNode.get("inventory");
+            mainSyncUpService.syncProducts();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
