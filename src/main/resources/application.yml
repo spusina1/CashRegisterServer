@@ -1,11 +1,41 @@
 spring:
   datasource:
-    url: 'jdbc:postgresql://localhost:5432/si_local'
-    username: 'app'
-    password: ''
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
   jpa:
     properties:
       hibernate:
+        generate_statistics: false
+        jdbc:
+          batch_size: 4
+        order_inserts: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    test-connection: false
+
+app:
+  jwtSecret: ${JWT_SECRET}
+  jwtExpirationInMs: 604800000
+main_server:
+  base_URI: ${MAIN_SERVER_BASE_URI}
+  login_username: ${MAIN_LOGIN_USERNAME}
+  login_password: ${MAIN_LOGIN_PASSWORD}
+  office_id: ${OFFICE_ID}
+  business_id: ${BUSINESS_ID}
+  poll_timeout: ${POLL_TIMEOUT:5}
+  poll_attempts: ${POLL_ATTEMPTS:10}
