@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import springfox.documentation.spring.web.json.Json;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 
@@ -34,6 +36,7 @@ public class MainSyncUpService {
         syncUsers();
         syncTables();
         scheduleTasks();
+        openCloseCashRegister();
     }
 
     public void syncBusiness() {
@@ -72,6 +75,16 @@ public class MainSyncUpService {
         logger.info(String.format("Synchronisation scheduled for %s", business.getSyncTime()));
         logger.info(String.format("Cash registers open scheduled for %s", business.getStartTime()));
         logger.info(String.format("Cash registers close scheduled for %s", business.getEndTime()));
+    }
+
+    private void openCloseCashRegister() {
+        Business business = businessService.getCurrentBusiness();
+        String startTime = business.getStartTime();
+        String endTime = business.getEndTime();
+        LocalDateTime now = LocalDateTime.now();
+        String currentTime = String.format("%02d:%02d", now.getHour(), now.getMinute());
+        boolean cashRegisterOpen = currentTime.compareTo(startTime) >= 0 && currentTime.compareTo(endTime) < 0;
+        cashRegisterService.setIsCashRegisterOpen(cashRegisterOpen);
     }
 
     private List<Product> fetchProductsFromMain() {

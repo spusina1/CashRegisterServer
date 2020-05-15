@@ -86,4 +86,10 @@ public class CashRegisterService {
                 business.getPlaceName());
     }
 
+    public void setIsCashRegisterOpen(boolean cashRegisterOpen) {
+        List<CashRegister> cashRegisters = cashRegisterRepository.findAll();
+        cashRegisters.forEach(cashRegister -> cashRegister.setOpen(cashRegisterOpen));
+        cashRegisterRepository.saveAll(cashRegisters);
+        cashRegisterRepository.flush();
+    }
 }
