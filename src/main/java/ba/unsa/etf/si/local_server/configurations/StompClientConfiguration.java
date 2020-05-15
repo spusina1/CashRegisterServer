@@ -8,6 +8,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -25,6 +26,7 @@ public class StompClientConfiguration {
     private final String URL = "ws://log-server-si.herokuapp.com/ws";
     private final MainSyncUpService mainSyncUpService;
     private final ReceiptService receiptService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -35,7 +37,7 @@ public class StompClientConfiguration {
         SockJsClient sockJsClient = new SockJsClient(transports);
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        stompClient.connect(URL, new MainStompSessionHandler(receiptService, mainSyncUpService));
+        stompClient.connect(URL, new MainStompSessionHandler(receiptService, mainSyncUpService, simpMessagingTemplate));
         return stompClient;
     }
 

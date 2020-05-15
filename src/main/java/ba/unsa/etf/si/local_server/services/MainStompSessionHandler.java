@@ -7,6 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -18,6 +21,9 @@ import java.lang.reflect.Type;
 public class MainStompSessionHandler implements StompSessionHandler {
     private final ReceiptService receiptService;
     private final MainSyncUpService mainSyncUpService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
+    private final Logger logger = LoggerFactory.getLogger(MainStompSessionHandler.class);
 
     @Override
     public void afterConnected(StompSession session, StompHeaders stompHeaders) {
@@ -27,14 +33,12 @@ public class MainStompSessionHandler implements StompSessionHandler {
 
     @Override
     public void handleException(StompSession stompSession, StompCommand stompCommand, StompHeaders stompHeaders, byte[] bytes, Throwable throwable) {
-        System.err.println("Handle exception!");
-        throwable.printStackTrace();
+        logger.error(String.format("An exception occurred (websocket): %s", throwable.getMessage()));
     }
 
     @Override
     public void handleTransportError(StompSession stompSession, Throwable throwable) {
-        System.err.println("Handle transport error!");
-        throwable.printStackTrace();
+        logger.error(String.format("An error occurred (websocket): %s", throwable.getMessage()));
     }
 
     @Override
@@ -66,8 +70,8 @@ public class MainStompSessionHandler implements StompSessionHandler {
             String receiptId = jsonNode.get("receiptId").asText();
             String statusString = jsonNode.get("status").asText();
             ReceiptStatus status = Enum.valueOf(ReceiptStatus.class, statusString);
-
             receiptService.updateReceiptStatus(receiptId, status);
+            simpMessagingTemplate.convertAndSend("/topic/receipt_status_update", jsonNode.toString());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -78,6 +82,7 @@ public class MainStompSessionHandler implements StompSessionHandler {
             JsonNode jsonNode = getJsonFromPayload(payload);
             JsonNode inventory = jsonNode.get("inventory");
             mainSyncUpService.syncProducts();
+            simpMessagingTemplate.convertAndSend("/topic/inventory_update", inventory.toString());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
