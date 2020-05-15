@@ -35,7 +35,3 @@ main_server:
   base_URI: ${MAIN_SERVER_BASE_URI}
   login_username: ${MAIN_LOGIN_USERNAME}
   login_password: ${MAIN_LOGIN_PASSWORD}
-  office_id: ${OFFICE_ID}
-  business_id: ${BUSINESS_ID}
-  poll_timeout: ${POLL_TIMEOUT:5}
-  poll_attempts: ${POLL_ATTEMPTS:10}
