@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class CashRegisterService {
     private final CashRegisterRepository cashRegisterRepository;
-    private final BusinessRepository businessRepository;
+    private final BusinessService businessService;
 
     public CashRegisterResponse registerCashRegister() {
         CashRegister cashRegister = cashRegisterRepository
@@ -24,9 +24,8 @@ public class CashRegisterService {
 
         cashRegister.setTaken(true);
         cashRegisterRepository.save(cashRegister);
-        Business business = businessRepository.findAll().get(0);
 
-        return makeCashRegisterResponse(cashRegister, business);
+        return makeCashRegisterResponse(cashRegister);
     }
 
     public void batchInsertCashRegisters(List<CashRegister> cashRegisters) {
@@ -67,15 +66,15 @@ public class CashRegisterService {
         CashRegister cashRegister = cashRegisterRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No available cash registers!"));
-        Business business = businessRepository.findAll().get(0);
-        return makeCashRegisterResponse(cashRegister, business);
+        return makeCashRegisterResponse(cashRegister);
     }
 
-    private CashRegisterResponse makeCashRegisterResponse(CashRegister cashRegister, Business business) {
+    private CashRegisterResponse makeCashRegisterResponse(CashRegister cashRegister) {
+        Business business = businessService.getCurrentBusiness();
         return new CashRegisterResponse(
                 cashRegister.getId(),
                 cashRegister.getName(),
-                null,
+                business.getOfficeId(),
                 business.getId(),
                 business.getBusinessName(),
                 cashRegister.getUuid(),
