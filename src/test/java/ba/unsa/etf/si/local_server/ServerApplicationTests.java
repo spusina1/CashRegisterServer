@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,16 +32,19 @@ import java.util.Set;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DataJpaTest
 class ServerApplicationTests {
-    private final ReceiptService receiptService;
-    private final MainSyncUpService mainSyncUpService;
-    private final BusinessService businessService;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final ProductRepository productRepository;
+    @Autowired
+    private ReceiptService receiptService;
+    @Autowired
+    private MainSyncUpService mainSyncUpService;
+    @Autowired
+    private BusinessService businessService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
-    @Test
-    void contextLoads() {
-    }
 
     @BeforeAll
     void syncDatabase() {
