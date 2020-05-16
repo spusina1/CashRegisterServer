@@ -1,5 +1,6 @@
 package ba.unsa.etf.si.local_server.controllers;
 
+import ba.unsa.etf.si.local_server.models.Item;
 import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.requests.FilterRequest;
 import ba.unsa.etf.si.local_server.services.ProductService;
@@ -35,5 +36,11 @@ public class ProductController {
     public Product getProduct(@PathVariable Long id) {
         return productService.getProduct(id);
     }
+
+    @GetMapping("/api/items")
+    public List<Item> getItems() {
+        return productService.getItems();
+    }
+
 
 }

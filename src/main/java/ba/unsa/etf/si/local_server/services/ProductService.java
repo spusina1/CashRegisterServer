@@ -3,8 +3,10 @@ package ba.unsa.etf.si.local_server.services;
 import ba.unsa.etf.si.local_server.exceptions.BadRequestException;
 import ba.unsa.etf.si.local_server.exceptions.ResourceNotFoundException;
 import ba.unsa.etf.si.local_server.exceptions.UnprocessableEntityException;
+import ba.unsa.etf.si.local_server.models.Item;
 import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
+import ba.unsa.etf.si.local_server.repositories.ItemRepository;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.requests.FilterRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptItemRequest;
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ItemRepository itemRepository;
 
     public List<Product> getProducts(FilterRequest filterRequest) {
         return productRepository.findByFilter(filterRequest);
@@ -58,4 +61,7 @@ public class ProductService {
         return log.get();
     }
 
+    public List<Item> getItems() {
+        return itemRepository.findAll();
+    }
 }
