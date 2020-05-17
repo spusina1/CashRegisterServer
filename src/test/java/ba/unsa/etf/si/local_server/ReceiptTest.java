@@ -155,7 +155,7 @@ public class ReceiptTest {
 
         List<Receipt> list = receiptService.getReceipts(1L);
 
-        assertThat(list.size()).isEqualTo(2);
+        assertThat(list).isEqualTo(receipts);
     }
 
 
