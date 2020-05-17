@@ -4,6 +4,7 @@ import ba.unsa.etf.si.local_server.models.*;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.RoleRepository;
 import ba.unsa.etf.si.local_server.repositories.UserRepository;
+import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.services.*;
 import org.apache.catalina.core.ApplicationContext;
 import org.junit.Assert;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -35,21 +37,11 @@ class ServerApplicationTests {
 
     @Test
     void testTest() {
-        // TODO: Vidjeti zasto ne mocka ovu .findAll metodu
-
-        System.out.println("Start");
-        Mockito.when(productRepository.findAll()).thenReturn(new ArrayList<Product>(){{
-            new Product();
-            new Product();
-            new Product();
-        }});
-
-        System.out.println(productRepository.findAll());
+        Mockito.when(productRepository.findAll()).thenReturn(Arrays.asList(new Product(), new Product()));
 
         for(Product p : productRepository.findAll()) {
             System.out.println("Yay");
         }
-        System.out.println("End");
     }
 
     @Test
