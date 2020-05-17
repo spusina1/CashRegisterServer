@@ -53,4 +53,22 @@ public class ReceiptTest {
         verify(receiptRepository, times(1)).deleteById(receipt.getId());
     }
 
+    @Test
+    void getSellerAppReceiptsTest(){
+
+        Receipt receipt = new Receipt();
+        receipt.setReceiptStatus(UNPROCESSED);
+        receipt.setServed(true);
+        receipt.setSeen(true);
+        receipt.setMessage("");
+        receipt.setReceiptId("");
+        receipt.setUsername("");
+        receipt.setId(1L);
+
+        given(receiptRepository.findById(receipt.getId())).willReturn(Optional.of(receipt));
+
+        ResponseEntity<Object> responseEntity = receiptService.deleteReceipt(receipt.getId());
+
+        verify(receiptRepository, times(1)).deleteById(receipt.getId());
+    }
 }
