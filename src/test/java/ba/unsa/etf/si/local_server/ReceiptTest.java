@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.PAID;
 import static ba.unsa.etf.si.local_server.models.transactions.ReceiptStatus.UNPROCESSED;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -89,5 +90,27 @@ public class ReceiptTest {
         Receipt receipt1 = receiptService.getReceiptById(receipt.getId());
 
         assertThat(receipt1).isEqualTo(receipt);
+    }
+
+    @Test
+    void updateReceiptStatusTest(){
+
+        Receipt receipt = new Receipt();
+        receipt.setReceiptStatus(UNPROCESSED);
+        receipt.setServed(true);
+        receipt.setSeen(true);
+        receipt.setMessage("");
+        receipt.setReceiptId("");
+        receipt.setUsername("");
+        receipt.setId(1L);
+
+        given(receiptRepository.findById(receipt.getId())).willReturn(Optional.of(receipt));
+        given(receiptRepository.findByReceiptId(receipt.getReceiptId())).willReturn(Optional.of(receipt));
+        given(receiptRepository.save(receipt)).willAnswer(inocation -> inocation.getArgument(0));
+
+        receiptService.updateReceiptStatus(receipt.getReceiptId(), PAID);
+        Receipt receipt1 = receiptService.getReceiptById(receipt.getId());
+
+        assertThat(receipt1.getReceiptStatus()).isEqualTo(PAID);
     }
 }
