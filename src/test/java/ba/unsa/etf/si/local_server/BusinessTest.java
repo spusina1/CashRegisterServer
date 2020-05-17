@@ -104,7 +104,41 @@ public class BusinessTest {
         assertThat(business1.getBusinessName()).isEqualTo(business.getBusinessName());
     }
 
+    @Test
+    void getSellerAppDataTest(){
 
+        CashRegister cashRegister = new CashRegister();
+        cashRegister.setName("cashRegister1");
+        cashRegister.setOpen(true);
+        cashRegister.setTaken(true);
+        cashRegister.setId(1L);
+        cashRegister.setUuid("");
+
+        List<CashRegister> cashRegisters = new ArrayList<>();
+        cashRegisters.add(cashRegister);
+
+        Business business = new Business();
+        business.setPlaceName("placeName");
+        business.setCashRegisters(cashRegisters);
+        business.setBusinessName("businessName");
+        business.setLanguage("bs");
+        business.setRestaurant(true);
+        business.setOfficeId(1L);
+        business.setBusinessId(1L);
+        business.setId(1L);
+
+        List<Business> businessList = new ArrayList<>();
+        businessList.add(business);
+
+
+        given(businessRepository.findById(business.getId())).willReturn(Optional.of(business));
+        given(businessRepository.findAll()).willReturn(businessList);
+
+        Business business1 = businessService.getCurrentBusiness();
+        SellerAppInfoResponse sellerAppInfoResponse = businessService.getSellerAppData();
+
+        assertThat(sellerAppInfoResponse.getPlaceName()).isEqualTo(business.getPlaceName());
+    }
 
 
 
