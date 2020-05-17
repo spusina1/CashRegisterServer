@@ -113,4 +113,50 @@ public class ReceiptTest {
 
         assertThat(receipt1.getReceiptStatus()).isEqualTo(PAID);
     }
+
+    @Test
+    void getReceipTest(){
+
+        Receipt receipt = new Receipt();
+        receipt.setReceiptStatus(UNPROCESSED);
+        receipt.setServed(true);
+        receipt.setSeen(true);
+        receipt.setMessage("");
+        receipt.setReceiptId("");
+        receipt.setUsername("");
+        receipt.setId(1L);
+        receipt.setCashRegisterId(1L);
+
+        Receipt receipt1 = new Receipt();
+        receipt1.setReceiptStatus(UNPROCESSED);
+        receipt1.setServed(true);
+        receipt1.setSeen(true);
+        receipt1.setMessage("");
+        receipt1.setReceiptId("");
+        receipt1.setUsername("");
+        receipt1.setId(1L);
+        receipt1.setCashRegisterId(1L);
+
+        Receipt receipt2 = new Receipt();
+        receipt2.setReceiptStatus(UNPROCESSED);
+        receipt2.setServed(true);
+        receipt2.setSeen(true);
+        receipt2.setMessage("");
+        receipt2.setReceiptId("");
+        receipt2.setUsername("");
+        receipt2.setId(1L);
+        receipt2.setCashRegisterId(2L);
+
+        List<Receipt> receipts = new ArrayList<>();
+        receipts.add(receipt);
+        receipts.add(receipt1);
+
+        given(receiptRepository.findByCashRegisterId(receipt.getCashRegisterId())).willReturn(receipts);
+
+        List<Receipt> list = receiptService.getReceipts(1L);
+
+        assertThat(list.size()).isEqualTo(2);
+    }
+
+
 }
