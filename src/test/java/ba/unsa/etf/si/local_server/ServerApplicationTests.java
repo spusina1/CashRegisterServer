@@ -1,36 +1,24 @@
 package ba.unsa.etf.si.local_server;
 
 import ba.unsa.etf.si.local_server.models.*;
-import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.repositories.RoleRepository;
 import ba.unsa.etf.si.local_server.repositories.UserRepository;
-import ba.unsa.etf.si.local_server.requests.ReceiptItemRequest;
-import ba.unsa.etf.si.local_server.requests.ReceiptRequest;
 import ba.unsa.etf.si.local_server.services.*;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.criterion.Example;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.catalina.core.ApplicationContext;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.ArrayList;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@RequiredArgsConstructor
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DataJpaTest
 class ServerApplicationTests {
     @Autowired
     private ReceiptService receiptService;
@@ -42,75 +30,35 @@ class ServerApplicationTests {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
+    @MockBean
     private ProductRepository productRepository;
 
+    @Test
+    void testTest() {
+        // TODO: Vidjeti zasto ne mocka ovu .findAll metodu
 
-    @BeforeAll
-    void syncDatabase() {
-        mainSyncUpService.syncDatabases();
+        System.out.println("Start");
+        Mockito.when(productRepository.findAll()).thenReturn(new ArrayList<Product>(){{
+            new Product();
+            new Product();
+            new Product();
+        }});
+
+        System.out.println(productRepository.findAll());
+
+        for(Product p : productRepository.findAll()) {
+            System.out.println("Yay");
+        }
+        System.out.println("End");
     }
 
     @Test
-    void createNewReceiptCashPayment() {
-        Business business = businessService.getCurrentBusiness();
-
-        List<Product> products = productRepository.findAll();
-        Product someProduct = products
-                .stream()
-                .filter(product -> product.getQuantity() > 0)
-                .findFirst()
-                .orElseThrow(
-                        () -> new IllegalStateException("No products in storege")
-                );
-
-        Set<ReceiptItemRequest> receiptItems = new HashSet<>();
-        receiptItems.add(new ReceiptItemRequest(someProduct.getId(), 1D));
-
-        // TODO: Ovdje timestamp mozda ne valja
-        Long timestamp = Timestamp.valueOf(LocalDateTime.now()).getTime();
-        System.out.println("This is a timestamp: " + timestamp);
-
-        CashRegister cashRegister = business
-                .getCashRegisters()
-                .stream()
-                .findFirst()
-                .orElseThrow(
-                    () -> new IllegalStateException("No cash registers in office! Can't make receipt")
-                );
-
-        String receiptId = String.format(
-                "%d-%d-%d-%d",
-                business.getBusinessId(),
-                business.getOfficeId(),
-                cashRegister.getId(),
-                timestamp
-        );
-
-        Role roleBartender = roleRepository
-                .findByRolename(RoleName.ROLE_CASHIER)
-                .orElseThrow(
-                        () -> new IllegalStateException("No cashier in office!")
-                );
-
-        User user = userRepository
-                .findAll()
-                .stream()
-                .filter(u -> u.getRoles().contains(roleBartender))
-                .findFirst().orElseThrow(
-                () -> new IllegalStateException("No cashier in office!")
-        );
-
-        ReceiptRequest receiptRequest = new ReceiptRequest(
-                0L,
-                receiptId,
-                user.getUsername(),
-                cashRegister.getId(),
-                "CASH",
-                receiptItems
-        );
-
-        receiptService.checkRequest(receiptRequest);
+    void mockTest() {
+        Mockito.when(productRepository.count()).thenReturn(123L);
+        long count = productRepository.count();
+        System.out.println(count);
+        Assert.assertEquals(123L, count);
+        Mockito.verify(productRepository).count();
     }
 
 }
