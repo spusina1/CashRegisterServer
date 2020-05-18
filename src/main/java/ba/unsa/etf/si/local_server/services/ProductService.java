@@ -7,6 +7,7 @@ import ba.unsa.etf.si.local_server.models.Item;
 import ba.unsa.etf.si.local_server.models.Product;
 import ba.unsa.etf.si.local_server.models.transactions.ReceiptItem;
 import ba.unsa.etf.si.local_server.repositories.ItemRepository;
+import ba.unsa.etf.si.local_server.repositories.ProductItemsRepository;
 import ba.unsa.etf.si.local_server.repositories.ProductRepository;
 import ba.unsa.etf.si.local_server.requests.FilterRequest;
 import ba.unsa.etf.si.local_server.requests.ReceiptItemRequest;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ItemRepository itemRepository;
+    private final ProductItemsRepository productItemsRepository;
 
     public List<Product> getProducts(FilterRequest filterRequest) {
         return productRepository.findByFilter(filterRequest);
@@ -35,10 +37,17 @@ public class ProductService {
     }
 
     public void batchInsertProducts(List<Product> products) {
+
+        productItemsRepository.deleteAllInBatch();
+        productItemsRepository.flush();
+        itemRepository.deleteAllInBatch();
+        itemRepository.flush();
         productRepository.deleteAllInBatch();
         productRepository.flush();
         productRepository.saveAll(products);
         productRepository.flush();
+        itemRepository.flush();
+        productItemsRepository.flush();
     }
 
     public void updateProductQuantity(Long id, Double delta) {
