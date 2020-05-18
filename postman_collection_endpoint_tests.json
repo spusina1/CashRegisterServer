@@ -1,0 +1,385 @@
+{
+	"info": {
+		"_postman_id": "3f130c6d-b327-4409-ad0d-0801b385d1cc",
+		"name": "CashRegisterServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login Cashier",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a4f3f97b-f836-4a1f-9f69-6017ae791334",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.token).not.eq(undefined);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"if(jsonData.token !== undefined) {",
+							"    pm.environment.set(\"Token\", jsonData.token);",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"dselimovic1\",\n\t\"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "Obtain bearer token"
+			},
+			"response": []
+		},
+		{
+			"name": "Sync",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a81814f7-cc6b-43e9-822d-631776c1f7a6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Field 'statusCode' is 200\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.statusCode).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Field 'message' is 'Synced...'\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Synced...\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0IiwiaWF0IjoxNTg5NjU4MTY4LCJleHAiOjE1OTAyNjI5Njh9.0JBtRL2UFjsAKK_pczIcVubZSlMHA22kI_FMcUSPiZ25ovBIStf77PT9_YRvuiuuDE_icslNrqSCi_n3OtpyVQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"server1\",\n    \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/sync",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"sync"
+					]
+				},
+				"description": "Synchronize server with main server"
+			},
+			"response": []
+		},
+		{
+			"name": "New Receipt",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bebc0628-f6ec-4141-93bd-85725924ca18",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has property 'message'\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).not.eq(undefined);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"receiptId\": \"1-1-1-1588462989017\",\n    \"paymentMethod\": \"PAY_APP\",\n    \"cashRegisterId\": 1,\n    \"receiptItems\": [\n        {\n            \"quantity\": 1,\n            \"id\": 14207\n        }\n    ],\n    \"username\": \"dselimovic1\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/receipts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"receipts"
+					]
+				},
+				"description": "Create a new receipt."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Products",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "dad8ceb6-20b0-4803-8b08-d077df5b1b80",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ca636ea-373f-4152-b912-45d16b327c2c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Is response array\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/products",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"products"
+					]
+				},
+				"description": "Get products from server"
+			},
+			"response": []
+		},
+		{
+			"name": "Login Bartender",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a4f3f97b-f836-4a1f-9f69-6017ae791334",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.token).not.eq(undefined);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"if(jsonData.token !== undefined) {",
+							"    pm.environment.set(\"Token\", jsonData.token);",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"mubina\",\n\t\"password\": \"Nova\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "Obtain bearer token"
+			},
+			"response": []
+		},
+		{
+			"name": "New Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bebc0628-f6ec-4141-93bd-85725924ca18",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has property 'message'\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).not.eq(undefined);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"message\": \"\",\n    \"receiptItems\": [\n        {\n            \"quantity\": 1,\n            \"id\": 14207\n        }\n    ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/orders",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"orders"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				},
+				"description": "Create a new receipt."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "1252fb90-805f-462e-9cc0-832ec2a5acd0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ec6a9dbe-79bf-4c4a-849c-1d6e96091d36",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "8111c6e0-0f21-4468-bef5-f90b2d7df072",
+			"key": "base_url",
+			"value": "localhost:8080",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
